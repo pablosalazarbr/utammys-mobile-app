@@ -8,7 +8,9 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>> get(String endpoint) async {
-    final url = Uri.parse('${getBaseUrl()}/$endpoint');
+    final baseUrl = getBaseUrl();
+    final normalizedEndpoint = endpoint.startsWith('/') ? endpoint.substring(1) : endpoint;
+    final url = Uri.parse('$baseUrl/$normalizedEndpoint');
     
     try {
       final response = await http.get(
@@ -22,7 +24,9 @@ class ApiService {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        throw Exception('Failed to load data: ${response.statusCode}');
+        throw Exception(
+          'Failed to load data: ${response.statusCode} - ${response.body}',
+        );
       }
     } catch (e) {
       throw Exception('Error fetching data: $e');
@@ -33,7 +37,9 @@ class ApiService {
     String endpoint,
     Map<String, dynamic> data,
   ) async {
-    final url = Uri.parse('${getBaseUrl()}/$endpoint');
+    final baseUrl = getBaseUrl();
+    final normalizedEndpoint = endpoint.startsWith('/') ? endpoint.substring(1) : endpoint;
+    final url = Uri.parse('$baseUrl/$normalizedEndpoint');
     
     try {
       final response = await http.post(
@@ -48,7 +54,9 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return json.decode(response.body);
       } else {
-        throw Exception('Failed to post data: ${response.statusCode}');
+        throw Exception(
+          'Failed to post data: ${response.statusCode} - ${response.body}',
+        );
       }
     } catch (e) {
       throw Exception('Error posting data: $e');
