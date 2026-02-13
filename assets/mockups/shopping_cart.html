@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Shopping Cart - Uniform Business App</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1152d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#111318] dark:text-gray-100 min-h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<nav class="sticky top-0 z-50 bg-white dark:bg-[#1a2130] border-b border-gray-100 dark:border-gray-800 px-4 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary cursor-pointer">arrow_back_ios</span>
+<h1 class="text-xl font-bold tracking-tight">Shopping Cart</h1>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined text-[#616f89]">shopping_bag</span>
+<span class="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">2</span>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 pb-40">
+<!-- Items Section -->
+<div class="px-4 py-2">
+<h3 class="text-[#111318] dark:text-gray-100 text-lg font-bold leading-tight tracking-[-0.015em] pb-4 pt-4">Your Items</h3>
+<!-- Item 1: Northside High School Navy Blazer -->
+<div class="bg-white dark:bg-[#1a2130] rounded-xl overflow-hidden mb-4 shadow-sm border border-gray-100 dark:border-gray-800">
+<div class="flex gap-4 p-4">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-[80px] shrink-0" data-alt="Navy blue school blazer with gold buttons" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA-MbnsqsM2DVNBdCPWXBYAYdkJ23DNSn7JARUcQB4EPZG7IsqsrLqdYi5qvmMofxCjjLL1c2usPHj4PFW_l2uBwun54qPkPtfwxaV6iZtBG5gIcFLVEbxwS2ZzZPpZPuMoDaVww_9cC6mXGhxvI2Sh5Yk4cEECZMWhNboqa9bPMEWS3h0dMK7urgCEF1YP9jOK2FDYMdUqyz6RiwXUX3ApgPE9ylem3rLwy2g3fLnBoICH0LgUAx1GOq1TUF1a5RL7y0tQGn8dQCI");'>
+</div>
+<div class="flex flex-1 flex-col justify-between">
+<div>
+<p class="text-[#111318] dark:text-gray-100 text-base font-semibold leading-tight">Northside High School Navy Blazer</p>
+<p class="text-[#616f89] dark:text-gray-400 text-sm mt-1">Size: 38R • Qty: 1</p>
+</div>
+<div class="flex items-center justify-between mt-2">
+<span class="text-primary font-bold">$125.00</span>
+<div class="flex gap-4">
+<button class="text-primary text-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">edit</span> Edit
+                                </button>
+<button class="text-red-500 text-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">delete</span> Remove
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 2: White Short Sleeve Polo -->
+<div class="bg-white dark:bg-[#1a2130] rounded-xl overflow-hidden mb-4 shadow-sm border border-gray-100 dark:border-gray-800">
+<div class="flex gap-4 p-4">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-[80px] shrink-0" data-alt="Classic white polo shirt for school uniform" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC2veW8UlHNfTg2MYVcxixdo-D6H2J29GNgg3syeSp-TTIMhj98eu6rYaCdeuENjZt03EW4TIlVwURHW-xJZN_vUCzy-pSxTUfIeFCO_5VAFG_wKowqTpe2HAW-j9L70P_9y13MwZaSFh1BkPAAcKWwyuM5Th5bI8BVnXkFzAqS7D5tseB9VjIKWqrhVfnfIhEmKuAm1nxEIvLIPGdGLmTv3HPL80_SzV0r-x5p7sHE3E3Vp-Zq8_PLTQYTYFRUx1ef2Spe-k4iFbU");'>
+</div>
+<div class="flex flex-1 flex-col justify-between">
+<div>
+<p class="text-[#111318] dark:text-gray-100 text-base font-semibold leading-tight">White Short Sleeve Polo</p>
+<p class="text-[#616f89] dark:text-gray-400 text-sm mt-1">Size: M • Qty: 3</p>
+</div>
+<div class="flex items-center justify-between mt-2">
+<span class="text-primary font-bold">$72.00</span>
+<div class="flex gap-4">
+<button class="text-primary text-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">edit</span> Edit
+                                </button>
+<button class="text-red-500 text-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">delete</span> Remove
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Special Instructions -->
+<div class="px-4 py-2">
+<h3 class="text-[#111318] dark:text-gray-100 text-lg font-bold leading-tight tracking-[-0.015em] pb-2">Special Instructions</h3>
+<div class="bg-white dark:bg-[#1a2130] rounded-xl p-4 border border-gray-100 dark:border-gray-800">
+<label class="block text-sm font-medium text-[#616f89] dark:text-gray-400 mb-2" for="instructions">Add student name for custom labeling or specific delivery notes.</label>
+<textarea class="w-full rounded-lg border-gray-200 dark:border-gray-700 dark:bg-[#101622] text-sm focus:border-primary focus:ring-primary placeholder:text-gray-400" id="instructions" placeholder="e.g. Label: James Carter, Grade 10" rows="3"></textarea>
+</div>
+</div>
+<!-- Order Summary Section -->
+<div class="px-4 py-4 mb-4">
+<div class="bg-white dark:bg-[#1a2130] rounded-xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm">
+<h3 class="text-[#111318] dark:text-gray-100 text-lg font-bold mb-4">Order Summary</h3>
+<div class="space-y-3">
+<div class="flex justify-between items-center text-base">
+<span class="text-[#616f89] dark:text-gray-400">Subtotal</span>
+<span class="text-[#111318] dark:text-gray-100 font-medium">$197.00</span>
+</div>
+<div class="flex justify-between items-center text-base">
+<span class="text-[#616f89] dark:text-gray-400">Shipping</span>
+<span class="text-[#111318] dark:text-gray-100 font-medium">$12.50</span>
+</div>
+<div class="flex justify-between items-center text-base">
+<span class="text-[#616f89] dark:text-gray-400">Estimated Tax</span>
+<span class="text-[#111318] dark:text-gray-100 font-medium">$15.76</span>
+</div>
+<div class="border-t border-gray-100 dark:border-gray-800 pt-3 flex justify-between items-center">
+<span class="text-lg font-bold text-[#111318] dark:text-gray-100">Total</span>
+<span class="text-xl font-bold text-primary">$225.26</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Fixed Bottom Checkout Button -->
+<div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1a2130] border-t border-gray-100 dark:border-gray-800 p-4 pb-8 safe-area-bottom">
+<button class="w-full bg-primary hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+            Proceed to Checkout
+            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</body></html>

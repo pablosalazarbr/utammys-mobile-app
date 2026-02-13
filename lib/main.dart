@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:utammys_mobile_app/models/category_model.dart';
-import 'package:utammys_mobile_app/screens/category_detail_screen.dart';
+import 'package:utammys_mobile_app/models/school_model.dart';
 import 'package:utammys_mobile_app/screens/school_search_screen.dart';
+import 'package:utammys_mobile_app/screens/school_products_screen.dart';
 import 'package:utammys_mobile_app/screens/cart_screen.dart';
-import 'package:utammys_mobile_app/services/category_service.dart';
+import 'package:utammys_mobile_app/services/school_service.dart';
+import 'package:utammys_mobile_app/services/cart_service.dart';
+import 'package:utammys_mobile_app/widgets/custom_bottom_nav_bar.dart';
 import 'package:utammys_mobile_app/widgets/ui_components.dart';
 
 Future<void> main() async {
@@ -18,11 +21,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Utammy's Uniforms",
+      debugShowCheckedModeBanner: false,
+      title: "Uniformes Tamys",
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: TammysColors.primary),
         useMaterial3: true,
         fontFamily: 'OpenSans',
+        scaffoldBackgroundColor: TammysColors.background,
       ),
       home: const HomePage(),
       routes: {
@@ -41,169 +46,245 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late Future<List<Category>> _categoriesFuture;
-  int _selectedIndex = 0;
+  late Future<List<School>> _popularSchoolsFuture;
+  int _selectedBottomIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _categoriesFuture = CategoryService.getCategories();
+    _popularSchoolsFuture = SchoolService.getRandomSchools(limit: 4);
   }
 
-  void _onItemTapped(int index) {
+  void _onBottomNavTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      _selectedBottomIndex = index;
     });
+    
+    // Navigate based on index
+    switch (index) {
+      case 0:
+        // Home (current)
+        break;
+      case 1:
+        // Search schools
+        Navigator.pushNamed(context, '/school-search');
+        break;
+      case 2:
+        // Cart
+        Navigator.pushNamed(context, '/cart');
+        break;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: TammysColors.background,
-        elevation: 1,
-        shadowColor: Colors.black.withOpacity(0.1),
-        title: Image.asset(
-          'assets/images/utamys_horizontal.png',
-          height: 40,
+      backgroundColor: TammysColors.background,
+      resizeToAvoidBottomInset: false,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Top Navigation Bar (Editorial style)
+            _buildTopNavBar(),
+            
+            // Hero Section
+            _buildHeroSection(),
+            
+            // Categories Section
+            _buildCategoriesSection(),
+            
+            // Popular Schools Section
+            _buildPopularSchoolsSection(),
+            
+            // Trust Section
+            _buildTrustSection(),
+            
+            // Bottom padding for navigation bar
+            const SizedBox(height: 80),
+          ],
         ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: TammysColors.primary),
-            onPressed: () {
-              Navigator.pushNamed(context, '/school-search');
-            },
+      ),
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: _selectedBottomIndex,
+        onTap: _handleNavigation,
+        cartItemCount: CartService().totalQuantity,
+      ),
+    );
+  }
+
+  void _handleNavigation(int index) {
+    if (index == _selectedBottomIndex) return;
+    
+    switch (index) {
+      case 0:
+        // Home (current)
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/school-search');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/cart');
+        break;
+    }
+  }
+
+  Widget _buildTopNavBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: TammysColors.background,
+        border: Border(
+          bottom: BorderSide(
+            color: TammysColors.divider,
+            width: 1,
           ),
-          IconButton(
-            icon: const Icon(Icons.shopping_bag_outlined, color: TammysColors.primary),
-            onPressed: () {
-              Navigator.pushNamed(context, '/cart');
-            },
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Logo/Brand (centered)
+          Image.asset(
+            'assets/images/utamys_horizontal.png',
+            height: 30,
+            fit: BoxFit.contain,
           ),
         ],
       ),
-      body: FutureBuilder<List<Category>>(
-        future: _categoriesFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingWidget(message: 'Cargando...');
-          }
+    );
+  }
 
-          if (snapshot.hasError) {
-            return ErrorDisplay(
-              message: 'Error cargando las categorías',
-              onRetry: () {
-                setState(() {
-                  _categoriesFuture = CategoryService.getCategories();
-                });
-              },
-            );
-          }
-
-          final categories = snapshot.data ?? [];
-
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Search bar
-                Padding(
-                  padding: const EdgeInsets.all(TammysDimensions.paddingMedium),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: TammysColors.lightGrey,
-                      borderRadius: BorderRadius.circular(TammysDimensions.borderRadius),
-                      border: Border.all(
-                        color: TammysColors.borderColor,
-                        width: 1,
-                      ),
-                    ),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Buscar uniformes',
-                        hintStyle: const TextStyle(
-                          color: TammysColors.darkGrey,
-                        ),
-                        border: InputBorder.none,
-                        prefixIcon: const Icon(
-                          Icons.search,
-                          color: TammysColors.darkGrey,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: TammysDimensions.paddingMedium,
-                          vertical: TammysDimensions.paddingSmall,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                // Categorías
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: TammysDimensions.paddingMedium,
-                  ),
-                  child: Text(
-                    'Nuestras Categorías',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: TammysColors.primary,
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: TammysDimensions.paddingMedium),
-                // Grid de categorías
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: TammysDimensions.paddingMedium,
-                  ),
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: TammysDimensions.paddingMedium,
-                      mainAxisSpacing: TammysDimensions.paddingMedium,
-                      childAspectRatio: 0.85,
-                    ),
-                    itemCount: categories.length,
-                    itemBuilder: (context, index) {
-                      final category = categories[index];
-                      return _buildCategoryCard(context, category);
-                    },
-                  ),
-                ),
-                const SizedBox(height: TammysDimensions.paddingLarge),
-              ],
-            ),
-          );
-        },
+  Widget _buildHeroSection() {
+    return Container(
+      height: 300,
+      decoration: BoxDecoration(
+        color: TammysColors.lightGrey,
+        image: DecorationImage(
+          image: const AssetImage('assets/images/categorias/school_header.jpg'),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+            Colors.grey.withOpacity(0.6),
+            BlendMode.multiply,
+          ),
+        ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: TammysColors.background,
-        elevation: 8,
-        selectedItemColor: TammysColors.accent,
-        unselectedItemColor: TammysColors.darkGrey,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Inicio',
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.black.withOpacity(0.2),
+              Colors.black.withOpacity(0.6),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Buscar',
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                'Uniformes de Calidad Premium',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 28,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Diseñados con confort y durabilidad',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.white.withOpacity(0.9),
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/school-search');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: TammysColors.primary,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    child: const Text(
+                      'Ver Catálogo',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_border),
-            label: 'Favoritos',
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoriesSection() {
+    // Categorías hardcodeadas: Solo Escolares y Empresariales
+    final categories = [
+      Category(
+        id: 1,
+        name: 'Escolares',
+        description: 'Uniformes para estudiantes',
+        parentId: null,
+        isActive: true,
+        imageUrl: 'assets/images/categorias/uniformes_escolares.jpg',
+      ),
+      Category(
+        id: 2,
+        name: 'Empresariales',
+        description: 'Uniformes corporativos',
+        parentId: null,
+        isActive: true,
+        imageUrl: 'assets/images/categorias/corporativos.jpg',
+      ),
+    ];
+    
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Categorías',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'Perfil',
+          const SizedBox(height: 12),
+          Row(
+            children: categories
+                .map((category) => Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                    child: _buildCategoryCard(context, category),
+                  ),
+                ))
+                .toList(),
           ),
         ],
       ),
@@ -213,73 +294,203 @@ class _HomePageState extends State<HomePage> {
   Widget _buildCategoryCard(BuildContext context, Category category) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CategoryDetailScreen(category: category),
-          ),
-        );
+        Navigator.pushNamed(context, '/school-search');
       },
       child: Container(
+        height: 200,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(TammysDimensions.borderRadius),
+          borderRadius: BorderRadius.circular(8),
+          color: TammysColors.lightGrey,
           border: Border.all(
-            color: TammysColors.borderColor,
-            width: 1.5,
+            color: TammysColors.divider,
+            width: 1,
           ),
-          color: TammysColors.background,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Imagen
             Expanded(
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(TammysDimensions.borderRadius),
-                    topRight: Radius.circular(TammysDimensions.borderRadius),
+                    topLeft: Radius.circular(8),
+                    topRight: Radius.circular(8),
                   ),
-                  image: DecorationImage(
-                    image: AssetImage(category.imageUrl ?? 'assets/images/utamys_white_bg.png'),
-                    fit: BoxFit.cover,
-                  ),
+                  color: TammysColors.lightGrey,
+                  image: category.imageUrl != null
+                      ? category.imageUrl!.startsWith('assets/')
+                          ? DecorationImage(
+                              image: AssetImage(category.imageUrl!),
+                              fit: BoxFit.cover,
+                            )
+                          : DecorationImage(
+                              image: NetworkImage(category.imageUrl!),
+                              fit: BoxFit.cover,
+                            )
+                      : null,
                 ),
               ),
             ),
-            // Contenido
             Padding(
-              padding: const EdgeInsets.all(TammysDimensions.paddingMedium),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    category.name,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: TammysColors.primary,
-                      fontSize: 14,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                category.name,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPopularSchoolsSection() {
+    return FutureBuilder<List<School>>(
+      future: _popularSchoolsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Padding(
+            padding: EdgeInsets.all(24),
+            child: LoadingWidget(message: 'Cargando colegios...'),
+          );
+        }
+
+        if (snapshot.hasError || snapshot.data == null || snapshot.data!.isEmpty) {
+          return const SizedBox();
+        }
+
+        final schools = snapshot.data!;
+
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Colegios Populares',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                ),
+              ),
+              const SizedBox(height: 12),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: schools
+                      .map((school) => Padding(
+                        padding: const EdgeInsets.only(right: 16),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SchoolProductsScreen(school: school),
+                              ),
+                            );
+                          },
+                          child: Column(
+                            children: [
+                              Container(
+                                width: 70,
+                                height: 70,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: TammysColors.lightGrey,
+                                  border: Border.all(
+                                    color: TammysColors.divider,
+                                    width: 1,
+                                  ),
+                                  image: school.logoUrl != null
+                                      ? DecorationImage(
+                                          image: NetworkImage(school.logoUrl!),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : null,
+                                ),
+                                child: school.logoUrl == null
+                                    ? Center(
+                                        child: Icon(
+                                          Icons.school,
+                                          color: TammysColors.primary,
+                                          size: 32,
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                              const SizedBox(height: 8),
+                              SizedBox(
+                                width: 80,
+                                child: Text(
+                                  school.name,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ))
+                      .toList(),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTrustSection() {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: TammysColors.lightGrey,
+          border: Border.all(
+            color: TammysColors.divider,
+            width: 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.verified, 
+                  color: TammysColors.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Socio Confiable',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${(category.subCategories?.length ?? category.children?.length ?? 0)} opciones',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: TammysColors.darkGrey,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Todos nuestros uniformes están fabricados siguiendo las guías oficiales de las instituciones para garantizar el 100% de cumplimiento con los códigos de vestimenta.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontSize: 13,
+                color: TammysColors.darkGrey,
+                height: 1.5,
               ),
             ),
           ],

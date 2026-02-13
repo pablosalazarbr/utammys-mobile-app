@@ -4,12 +4,12 @@ import 'package:utammys_mobile_app/services/mock_data_service.dart';
 
 class CategoryService {
   /// Obtiene todas las categorías principales desde la API
-  /// Esperado del backend: GET /categories
+  /// Esperado del backend: GET /shop/categories (Pública - Sin autenticación)
   /// Respuesta: List<Category>
   /// En prototipo: Usa MockDataService si hay error
   static Future<List<Category>> getCategories() async {
     try {
-      final response = await ApiService.getList('categories');
+      final response = await ApiService.getList('shop/categories');
       return response
           .map((item) => Category.fromJson(item as Map<String, dynamic>))
           .toList();
@@ -20,11 +20,11 @@ class CategoryService {
   }
 
   /// Obtiene una categoría específica con sus subcategorías
-  /// Esperado del backend: GET /categories/{id}
+  /// Esperado del backend: GET /shop/categories/{id} (Pública - Sin autenticación)
   /// Respuesta: Category
   static Future<Category> getCategoryById(int id) async {
     try {
-      final response = await ApiService.get('categories/$id');
+      final response = await ApiService.get('shop/categories/$id');
       return Category.fromJson(response);
     } catch (e) {
       // Usar mock data en prototipo
@@ -37,11 +37,11 @@ class CategoryService {
   }
 
   /// Obtiene las subcategorías de una categoría específica
-  /// Esperado del backend: GET /categories/{id}/sub-categories
+  /// Esperado del backend: GET /shop/categories/{id}/products (Pública - Sin autenticación)
   /// Respuesta: List<Category>
   static Future<List<Category>> getSubCategories(int categoryId) async {
     try {
-      final response = await ApiService.getList('categories/$categoryId/sub-categories');
+      final response = await ApiService.getList('shop/categories/$categoryId/products');
       return response
           .map((item) => Category.fromJson(item as Map<String, dynamic>))
           .toList();

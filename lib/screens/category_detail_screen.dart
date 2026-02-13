@@ -4,6 +4,8 @@ import 'package:utammys_mobile_app/models/school_model.dart';
 import 'package:utammys_mobile_app/screens/school_products_screen.dart';
 import 'package:utammys_mobile_app/services/category_service.dart';
 import 'package:utammys_mobile_app/services/product_service.dart';
+import 'package:utammys_mobile_app/services/cart_service.dart';
+import 'package:utammys_mobile_app/widgets/custom_bottom_nav_bar.dart';
 import 'package:utammys_mobile_app/widgets/ui_components.dart';
 
 class CategoryDetailScreen extends StatefulWidget {
@@ -22,6 +24,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
   late Future<List<Category>> _subCategoriesFuture;
   late Future<List<School>> _schoolsFuture;
   bool _isSchoolCategory = false;
+  int _currentNavIndex = 0; // Home tab (since we come from home)
 
   @override
   void initState() {
@@ -38,9 +41,26 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
     }
   }
 
+  void _handleNavigation(int index) {
+    if (index == _currentNavIndex) return;
+    
+    switch (index) {
+      case 0:
+        Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/school-search');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/cart');
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: TammysColors.background,
         foregroundColor: TammysColors.primary,
@@ -58,6 +78,11 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
       body: _isSchoolCategory
           ? _buildSchoolsView(context)
           : _buildSubCategoriesView(context),
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: _currentNavIndex,
+        onTap: _handleNavigation,
+        cartItemCount: CartService().totalQuantity,
+      ),
     );
   }
 

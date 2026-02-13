@@ -14,6 +14,28 @@ class SchoolService {
     }
   }
 
+  /// Obtiene colegios aleatorios (para mostrar en home)
+  static Future<List<School>> getRandomSchools({int limit = 4}) async {
+    try {
+      final response = await ApiService.get('shop/clients/random?limit=$limit');
+      if (response.containsKey('data')) {
+        final data = response['data'] as List<dynamic>;
+        return data
+            .map((item) => School.fromJson(item as Map<String, dynamic>))
+            .toList();
+      }
+      throw Exception('Unexpected response format');
+    } catch (e) {
+      // Fallback: obtener todos los colegios si falla el endpoint de random
+      try {
+        final schools = await getSchools();
+        return schools.length <= limit ? schools : schools.sublist(0, limit);
+      } catch (_) {
+        throw Exception('Error fetching random schools: $e');
+      }
+    }
+  }
+
   /// Obtiene los detalles de un colegio específico
   static Future<School> getSchoolById(int id) async {
     try {

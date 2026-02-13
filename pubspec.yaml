@@ -1,5 +1,5 @@
 name: utammys_mobile_app
-description: A mobile app to sell uniforms - clothing catalog with Laravel API integration.
+description: Un catalogo en linea para la compra de uniformes de alta calidad.
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -12,6 +12,8 @@ dependencies:
   flutter_dotenv: ^5.1.0
   http: ^1.1.0
   cupertino_icons: ^1.0.2
+  flutter_inappwebview: ^6.0.0
+  connectivity_plus: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -34,14 +36,14 @@ flutter:
 
 flutter_launcher_icons:
   android: "launcher_icon"
-  image_path: "assets/images/utamys_white_bg.png"
-  adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/images/utamys_white_bg.png"
+  image_path: "assets/images/utamys_icon_white.png"
+  adaptive_icon_background: "#1A1A1A"
+  adaptive_icon_foreground: "assets/images/utamys_icon_white.png"
 
 flutter_native_splash:
-  color: "#0000FF"
-  image: assets/images/utamys_white_bg.png
+  color: "#FFFFFF"
+  image: assets/images/utamys_icon_white.png
   android_12:
-    image: assets/images/utamys_white_bg.png
+    image: assets/images/utamys_icon_white.png
     icon_background_color: "#FFFFFF"
   web: false

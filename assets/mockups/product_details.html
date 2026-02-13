@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Northside Blazer Details</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1152d4",
+                        "accent-gold": "#D4AF37",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .ios-bottom-safe {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#111318] dark:text-white antialiased">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 flex items-center bg-white dark:bg-background-dark/95 backdrop-blur-md p-4 justify-between border-b border-[#f0f2f4] dark:border-white/10">
+<div class="flex items-center gap-2">
+<button class="flex size-10 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
+</button>
+</div>
+<h2 class="text-lg font-bold leading-tight flex-1 text-center">Details</h2>
+<div class="flex w-10 items-center justify-end">
+<button class="flex size-10 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-2xl">share</span>
+</button>
+</div>
+</header>
+<main class="pb-32">
+<!-- Image Gallery -->
+<div class="@container">
+<div class="@[480px]:px-4 @[480px]:py-3">
+<div class="bg-cover bg-center flex flex-col justify-end overflow-hidden bg-white dark:bg-gray-900 @[480px]:rounded-xl min-h-[420px] relative" data-alt="Close up of a premium navy school blazer with gold buttons" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0) 20%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBuDGE2z2IIU0sCn902Toy9V1ZJvY4Aof9wjmddsr-QYkeipKwTcOS2a3kuvh1w2EVqKHdNeo7HNM5tEFjt_FqEdNjlv9rtSBXT9YYYZ9LtPuKgo4qWOXI2LnnQEiycEZU88pJqGZMNKmp86dEt2FLBdC6tBPCfxfu6dFxE-CsQSSG1Vco_jfVAlgKaXl8I65rELT9JoI6tjGN9egKbTrDUiXkfPK17R07kW-dbUM4dS4lCwT4JImiAUxnT0aNI-s_NIjgdzk7kPeQ");'>
+<div class="absolute top-4 right-4 bg-white/90 dark:bg-black/60 p-2 rounded-full shadow-sm">
+<span class="material-symbols-outlined text-gray-700 dark:text-white">zoom_in</span>
+</div>
+<div class="flex justify-center gap-2 p-5">
+<div class="size-2 rounded-full bg-white"></div>
+<div class="size-2 rounded-full bg-white opacity-40"></div>
+<div class="size-2 rounded-full bg-white opacity-40"></div>
+<div class="size-2 rounded-full bg-white opacity-40"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Title & Price Section -->
+<div class="px-4 pt-6 pb-2">
+<div class="flex justify-between items-start gap-4">
+<h1 class="text-[#111318] dark:text-white tracking-tight text-2xl font-bold leading-tight">Northside High School Navy Blazer</h1>
+<p class="text-primary dark:text-blue-400 text-xl font-bold">$120.00</p>
+</div>
+<!-- School Badge -->
+<div class="flex gap-3 mt-4 flex-wrap">
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-accent-gold/15 border border-accent-gold/20 px-3">
+<span class="material-symbols-outlined text-accent-gold text-[18px] font-bold">verified</span>
+<p class="text-[#856404] dark:text-accent-gold text-xs font-bold uppercase tracking-wider">School Required Item</p>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-green-100 dark:bg-green-900/30 px-3">
+<p class="text-green-700 dark:text-green-400 text-xs font-semibold">In Stock</p>
+</div>
+</div>
+</div>
+<!-- Size Selection -->
+<div class="px-4 pt-6">
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-sm font-bold uppercase tracking-wide text-gray-500">Select Size</h3>
+<button class="text-primary text-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">straighten</span>
+                    Size Guide
+                </button>
+</div>
+<div class="grid grid-cols-4 gap-2">
+<button class="flex h-12 items-center justify-center rounded-lg border-2 border-primary bg-primary/5 text-primary font-bold">36R</button>
+<button class="flex h-12 items-center justify-center rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-800 font-medium">38R</button>
+<button class="flex h-12 items-center justify-center rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-800 font-medium">40R</button>
+<button class="flex h-12 items-center justify-center rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-800 font-medium">42R</button>
+<button class="flex h-12 items-center justify-center rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-800 font-medium">38L</button>
+<button class="flex h-12 items-center justify-center rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-800 font-medium">40L</button>
+<button class="flex h-12 items-center justify-center rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-800 font-medium">42L</button>
+<button class="flex h-12 items-center justify-center rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-800 font-medium">44L</button>
+</div>
+</div>
+<!-- Quantity Selection -->
+<div class="px-4 pt-8">
+<h3 class="text-sm font-bold uppercase tracking-wide text-gray-500 mb-3">Quantity</h3>
+<div class="flex items-center gap-4 w-fit bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-white/10 p-1">
+<button class="size-10 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<span class="text-lg font-bold px-4">1</span>
+<button class="size-10 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<!-- Product Details Accordion -->
+<div class="mt-8 border-t border-gray-100 dark:border-white/10">
+<!-- Item 1 -->
+<div class="border-b border-gray-100 dark:border-white/10">
+<button class="flex w-full items-center justify-between p-4 py-5 text-left">
+<span class="font-bold">Fabric &amp; Fit</span>
+<span class="material-symbols-outlined">expand_more</span>
+</button>
+<div class="px-4 pb-5 text-sm leading-relaxed text-[#616f89] dark:text-gray-400">
+                    Premium 70% wool blend designed for durability and daily school wear. Tailored classic fit with reinforced shoulder pads and high-quality internal lining.
+                </div>
+</div>
+<!-- Item 2 -->
+<div class="border-b border-gray-100 dark:border-white/10">
+<button class="flex w-full items-center justify-between p-4 py-5 text-left">
+<span class="font-bold">Care Instructions</span>
+<span class="material-symbols-outlined text-gray-400">add</span>
+</button>
+</div>
+<!-- Item 3 -->
+<div class="border-b border-gray-100 dark:border-white/10">
+<button class="flex w-full items-center justify-between p-4 py-5 text-left">
+<span class="font-bold">Embroidery Details</span>
+<span class="material-symbols-outlined text-gray-400">add</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Sticky Footer -->
+<footer class="fixed bottom-0 left-0 right-0 bg-white dark:bg-background-dark border-t border-gray-200 dark:border-white/10 p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] ios-bottom-safe">
+<div class="flex gap-4 max-w-screen-xl mx-auto">
+<button class="flex size-14 items-center justify-center rounded-xl border-2 border-gray-200 dark:border-white/10 hover:border-primary transition-all">
+<span class="material-symbols-outlined text-gray-600 dark:text-gray-300">favorite</span>
+</button>
+<button class="flex-1 bg-primary text-white font-bold h-14 rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined">shopping_bag</span>
+                Add to Cart
+            </button>
+</div>
+</footer>
+</body></html>

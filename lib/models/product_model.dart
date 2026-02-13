@@ -103,7 +103,7 @@ class Product {
       id: json['id'] as int,
       clientId: json['client_id'] as int,
       categoryId: json['category_id'] as int?,
-      sku: json['sku'] as String,
+      sku: json['sku'] as String? ?? 'SKU-${json['id']}',
       name: json['name'] as String,
       description: json['description'] as String?,
       longDescription: json['long_description'] as String?,
@@ -176,6 +176,7 @@ class ProductSize {
   final int id;
   final int productId;
   final String size;
+  final String? sku;
   final String? barcode;
   final double price;
   final bool isAvailable;
@@ -186,6 +187,7 @@ class ProductSize {
     required this.id,
     required this.productId,
     required this.size,
+    this.sku,
     this.barcode,
     required this.price,
     this.isAvailable = true,
@@ -215,6 +217,7 @@ class ProductSize {
       id: json['id'] as int,
       productId: json['product_id'] as int,
       size: (json['size'] as String?) ?? 'N/A',
+      sku: json['sku'] as String?,
       barcode: json['barcode'] as String?,
       price: parsePrice(json['price']),
       isAvailable: json['is_available'] as bool? ?? true,
@@ -228,9 +231,12 @@ class ProductSize {
       'id': id,
       'product_id': productId,
       'size': size,
+      'sku': sku,
       'barcode': barcode,
       'price': price,
       'is_available': isAvailable,
+      'created_at': createdAt?.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
     };
   }
 }
@@ -292,15 +298,19 @@ class CartItem {
   final Product product;
   final ProductSize? size;
   final int quantity;
+  final String? customizationText;
+  final double customizationCost;
 
   CartItem({
     required this.product,
     this.size,
     required this.quantity,
+    this.customizationText,
+    this.customizationCost = 0.0,
   });
 
   double getTotalPrice() {
     final price = size?.price ?? product.getMinPrice() ?? 0.0;
-    return price * quantity;
+    return (price + customizationCost) * quantity;
   }
 }

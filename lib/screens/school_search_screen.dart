@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:utammys_mobile_app/models/school_model.dart';
 import 'package:utammys_mobile_app/screens/school_products_screen.dart';
 import 'package:utammys_mobile_app/services/school_service.dart';
+import 'package:utammys_mobile_app/services/cart_service.dart';
+import 'package:utammys_mobile_app/widgets/custom_bottom_nav_bar.dart';
 import 'package:utammys_mobile_app/widgets/ui_components.dart';
 
 class SchoolSearchScreen extends StatefulWidget {
@@ -17,6 +19,7 @@ class _SchoolSearchScreenState extends State<SchoolSearchScreen> {
   List<School> _allSchools = [];
   List<School> _filteredSchools = [];
   bool _isSearching = false;
+  int _currentNavIndex = 1; // Search tab
 
   @override
   void initState() {
@@ -52,6 +55,22 @@ class _SchoolSearchScreenState extends State<SchoolSearchScreen> {
     });
   }
 
+  void _handleNavigation(int index) {
+    if (index == _currentNavIndex) return;
+    
+    switch (index) {
+      case 0:
+        Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+        break;
+      case 1:
+        // Already on search
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/cart');
+        break;
+    }
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -61,6 +80,7 @@ class _SchoolSearchScreenState extends State<SchoolSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: TammysColors.background,
         elevation: 1,
@@ -176,6 +196,11 @@ class _SchoolSearchScreenState extends State<SchoolSearchScreen> {
             ],
           );
         },
+      ),
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: _currentNavIndex,
+        onTap: _handleNavigation,
+        cartItemCount: CartService().totalQuantity,
       ),
     );
   }

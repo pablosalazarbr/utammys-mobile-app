@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:utammys_mobile_app/helpers/image_url_helper.dart';
 import 'package:utammys_mobile_app/models/product_model.dart';
 import 'package:utammys_mobile_app/models/school_model.dart';
 import 'package:utammys_mobile_app/screens/product_detail_screen.dart';
 import 'package:utammys_mobile_app/services/product_service.dart';
+import 'package:utammys_mobile_app/services/cart_service.dart';
+import 'package:utammys_mobile_app/widgets/custom_bottom_nav_bar.dart';
 import 'package:utammys_mobile_app/widgets/ui_components.dart';
 
 class SchoolProductsScreen extends StatefulWidget {
@@ -19,6 +22,7 @@ class SchoolProductsScreen extends StatefulWidget {
 
 class _SchoolProductsScreenState extends State<SchoolProductsScreen> {
   late Future<List<Product>> _productsFuture;
+  int _currentNavIndex = 1; // Search tab (since we're in school products from search)
 
   @override
   void initState() {
@@ -26,28 +30,37 @@ class _SchoolProductsScreenState extends State<SchoolProductsScreen> {
     _productsFuture = ProductService.getClientProducts(widget.school.id);
   }
 
+  void _handleNavigation(int index) {
+    if (index == _currentNavIndex) return;
+    
+    switch (index) {
+      case 0:
+        Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+        break;
+      case 1:
+        Navigator.pushNamedAndRemoveUntil(context, '/school-search', (route) => false);
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/cart');
+        break;
+    }
+  }
+
   String _getImageUrl(String? mediaPath) {
     if (mediaPath == null || mediaPath.isEmpty) {
+      print('[SchoolProductsScreen] ADVERTENCIA: mediaPath vacío o nulo');
       return 'https://via.placeholder.com/300x400?text=Sin+Imagen';
     }
-    // Si es una URL completa con localhost, reemplazar por 10.0.2.2
-    if (mediaPath.startsWith('http://localhost:8000')) {
-      return mediaPath.replaceFirst('http://localhost:8000', 'http://10.0.2.2:8000');
-    }
-    // Si es una URL completa, retornarla tal cual
-    if (mediaPath.startsWith('http')) {
-      return mediaPath;
-    }
-    // Si es una ruta relativa, construir la URL completa para emulador
-    if (mediaPath.startsWith('/')) {
-      return 'http://10.0.2.2:8000$mediaPath';
-    }
-    return 'http://10.0.2.2:8000/$mediaPath';
+    
+    final url = ImageUrlHelper.buildImageUrl(mediaPath);
+    print('[SchoolProductsScreen] URL generada para "$mediaPath" => "$url"');
+    return url;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: TammysColors.background,
         elevation: 1,
@@ -68,10 +81,6 @@ class _SchoolProductsScreenState extends State<SchoolProductsScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.search, color: TammysColors.primary),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.shopping_bag_outlined, color: TammysColors.primary),
             onPressed: () {},
           ),
         ],
@@ -131,7 +140,7 @@ class _SchoolProductsScreenState extends State<SchoolProductsScreen> {
             itemBuilder: (context, index) {
               return ProductCard(
                 product: products[index],
-                imageUrl: _getImageUrl(products[index].getFirstImage()),
+                imageUrl: _getImageUrl(products[index].media?.first ?? products[index].getFirstImage()),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -146,6 +155,11 @@ class _SchoolProductsScreenState extends State<SchoolProductsScreen> {
             },
           );
         },
+      ),
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: _currentNavIndex,
+        onTap: _handleNavigation,
+        cartItemCount: CartService().totalQuantity,
       ),
     );
   }
@@ -200,14 +214,34 @@ class _ProductCardState extends State<ProductCard> {
                 child: Stack(
                   children: [
                     Center(
-                      child: Image.network(
-                        widget.imageUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Icon(
-                            Icons.image_not_supported,
-                            color: Colors.grey[400],
-                            size: 40,
+                      child: Builder(
+                        builder: (context) {
+                          final imageUrl = widget.imageUrl;
+                          print('[ProductCard] Renderizando imagen: $imageUrl');
+                          print('[ProductCard] Producto: ${widget.product.name}, ID: ${widget.product.id}');
+                          return Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              print('[ProductCard] Cargando imagen... ${loadingProgress.cumulativeBytesLoaded}/${loadingProgress.expectedTotalBytes}');
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes != null
+                                      ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              print('[ProductCard] ERROR cargando imagen: $error');
+                              print('[ProductCard] Stack trace: $stackTrace');
+                              return Icon(
+                                Icons.image_not_supported,
+                                color: Colors.grey[400],
+                                size: 40,
+                              );
+                            },
                           );
                         },
                       ),

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Find Your Organization</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar hiding for the horizontal index if needed */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen text-[#111318] dark:text-white">
+<div class="max-w-[430px] mx-auto min-h-screen flex flex-col bg-white dark:bg-background-dark shadow-xl">
+<!-- TopAppBar -->
+<div class="sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md">
+<div class="flex items-center p-4 pb-2 justify-between">
+<div class="text-[#111318] dark:text-white flex size-10 shrink-0 items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+<h2 class="text-[#111318] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">Find Your Organization</h2>
+</div>
+<!-- SearchBar -->
+<div class="px-4 py-3">
+<label class="flex flex-col min-w-40 h-12 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full overflow-hidden">
+<div class="text-[#616f89] flex border-none bg-[#f0f2f4] dark:bg-slate-800 items-center justify-center pl-4" data-icon="MagnifyingGlass">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden border-none bg-[#f0f2f4] dark:bg-slate-800 text-[#111318] dark:text-white focus:outline-0 focus:ring-0 h-full placeholder:text-[#616f89] px-4 pl-2 text-base font-normal leading-normal" placeholder="Search school or company name" value=""/>
+</div>
+</label>
+</div>
+<!-- SegmentedButtons -->
+<div class="flex px-4 py-2">
+<div class="flex h-11 flex-1 items-center justify-center rounded-xl bg-[#f0f2f4] dark:bg-slate-800 p-1">
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-slate-700 has-[:checked]:shadow-sm has-[:checked]:text-primary dark:has-[:checked]:text-white text-[#616f89] text-sm font-semibold leading-normal transition-all">
+<span class="truncate">Schools</span>
+<input checked="" class="invisible w-0" name="org-type" type="radio" value="Schools"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-slate-700 has-[:checked]:shadow-sm has-[:checked]:text-primary dark:has-[:checked]:text-white text-[#616f89] text-sm font-semibold leading-normal transition-all">
+<span class="truncate">Businesses</span>
+<input class="invisible w-0" name="org-type" type="radio" value="Businesses"/>
+</label>
+</div>
+</div>
+<div class="h-4 border-b border-gray-100 dark:border-slate-800"></div>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto pb-8">
+<!-- Section: Recent -->
+<div class="px-4 pt-6 pb-2">
+<h3 class="text-[#616f89] text-xs font-bold uppercase tracking-wider">Recently Visited</h3>
+</div>
+<!-- Card: Recent 1 -->
+<div class="p-4 py-2">
+<div class="flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm active:scale-95 transition-transform cursor-pointer">
+<div class="flex items-center gap-4 flex-1">
+<div class="size-14 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover" data-alt="University crest logo in blue" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB6t9mnGZXKrY0Gr2Qks8lzF7QqBRcWiY7bcbBTH4bBNvBrzwgQpHmDgniyFU1xhnRfrArAO7st2r46NrF6oo7L0RQkIy9vnnFoYKSOEHgBN-LourzB5Nl5cYHUwWH34vPXezy72pyLnyGWniSi_dkHZp1dzYZYj3sV9u_1_EQ-hHr1iEJbXfytyovOlUB1RYI-vVJoJZZoqmHUSene3mXmoxaNpbvkateKsiIj4ClK1cNBVcJyIH0Z3bg_HME4l56mDj_j9E5PjtU");'></div>
+</div>
+<div class="flex flex-col gap-0.5">
+<p class="text-[#111318] dark:text-white text-base font-bold leading-tight">Northside High School</p>
+<p class="text-[#616f89] text-sm font-normal leading-normal">Chicago, IL</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-gray-300">chevron_right</span>
+</div>
+</div>
+<!-- All Organizations -->
+<div class="px-4 pt-6 pb-2">
+<h3 class="text-[#616f89] text-xs font-bold uppercase tracking-wider">All Schools</h3>
+</div>
+<!-- Card 2 -->
+<div class="p-4 py-2">
+<div class="flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-50 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+<div class="flex items-center gap-4 flex-1">
+<div class="size-14 rounded-lg bg-green-100 flex items-center justify-center overflow-hidden shrink-0">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover" data-alt="Green leaf school emblem" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDX_NDjD7Ioxx1avHEctJn3aiHroV4JcywRCkE79LqJd5lKdg8Oeie9Ahaf-UBgwL9ZLRHlCgN65hwtyqaJd3vht7YOnSu5n7xxgyhh8PybuBQDbkzgJ6xC4ZFs7rjKODPXm1CBCLJNq9S5QwDL9b88OUc15Oh39VWjmCm4Ww6t3VikrAivK0OOpLnkyw69YvY33Fbb1KXZWpNDgNXbojIPc_WWBJaig2j2jhMRb-_XIduQnvBP4hdxI9dJdBS3zAHFMvNaIfWfNQM");'></div>
+</div>
+<div class="flex flex-col gap-0.5">
+<p class="text-[#111318] dark:text-white text-base font-bold leading-tight">Green Valley Elementary</p>
+<p class="text-[#616f89] text-sm font-normal leading-normal">Austin, TX</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-gray-300">chevron_right</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="p-4 py-2">
+<div class="flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-50 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+<div class="flex items-center gap-4 flex-1">
+<div class="size-14 rounded-lg bg-orange-100 flex items-center justify-center overflow-hidden shrink-0">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover" data-alt="Orange tiger mascot logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDZJWS26CxBVe4ato_bFwRfkXRXDG80jYgugmGYE-vLcKn7aHcQDq99lqPDfaVmjQrRqS9HPha9d_U7qPUKqu4jyYo7AXOWoi2vfQ0xGD0QgMoUKzSGQYGkPfYlGQDkSycXu9eOs8Uul1aNaY0GhSpc_l9ec7tgeXhppPq8ffSI6rFK9b8Z2MaNx6nQtsS5af5ssOIlWdN4QfQulAI3Pqnsu8awMDF8IJO0WrRkJEgeaXvB98U7fS4nMBaBzCrTBcqVwrFrn8om_VI");'></div>
+</div>
+<div class="flex flex-col gap-0.5">
+<p class="text-[#111318] dark:text-white text-base font-bold leading-tight">Tiger Creek Middle</p>
+<p class="text-[#616f89] text-sm font-normal leading-normal">Nashville, TN</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-gray-300">chevron_right</span>
+</div>
+</div>
+<!-- Card 4 (Business Example) -->
+<div class="p-4 py-2">
+<div class="flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-50 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+<div class="flex items-center gap-4 flex-1">
+<div class="size-14 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden shrink-0">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover" data-alt="Corporate tech logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBiC5E4JT0flfRWYY_HWinMDqjt3sVMin6MoIjeI4Ip8uBEp-jQnhWqMGTV9kus5e2Szou9SoqAzjIoORuuBt3upTyqXDAaVO1LmeG4QncBIVRYjB9oKODWdWEU1Qh0ARETRL8pjoqsDdemQQ3EivOxeEozuxjhreBOIJxsmUiPntomOWIOJLBDTjSWnWgqNa6Q9YoaQ9RuFjcsgc4eMrcMk91SejIsbUi3yRrwHmYFwtu-2U5YjqUmqrwQQJvAEVnPQjyd8lXL78g");'></div>
+</div>
+<div class="flex flex-col gap-0.5">
+<p class="text-[#111318] dark:text-white text-base font-bold leading-tight">Tech Solutions Corp</p>
+<p class="text-[#616f89] text-sm font-normal leading-normal">San Francisco, CA</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-gray-300">chevron_right</span>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="p-4 py-2">
+<div class="flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-50 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+<div class="flex items-center gap-4 flex-1">
+<div class="size-14 rounded-lg bg-red-100 flex items-center justify-center overflow-hidden shrink-0">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover" data-alt="Red shield academy logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBOmn49ilIlVFJS008A2MXanY6k1IT1dEKebF47nYLLMTUKTkmS7g_Gl7_jugUpOEbxwWRu32rdIfqmp_N0OU_I8DsTOg6dMA7K1b6p67dUHHNYDIhmaKlzPC_nw6HrBY-IrRGCx5KRs6-UixRqzzvpfM4JuJpOA700U4zG5iLsCkcebXOEliz4gEBqDK2qbe1QGAPxQw0N_nfHuex1suliptjWFXoCu8944PEET6PID19Xkf7R17muM9ks3aEsD_wZguWvUBh2QfI");'></div>
+</div>
+<div class="flex flex-col gap-0.5">
+<p class="text-[#111318] dark:text-white text-base font-bold leading-tight">Lincoln Academy</p>
+<p class="text-[#616f89] text-sm font-normal leading-normal">Denver, CO</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-gray-300">chevron_right</span>
+</div>
+</div>
+<!-- Empty State Placeholder (Hidden) -->
+<div class="hidden flex flex-col items-center justify-center py-20 px-10 text-center">
+<div class="size-20 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 text-gray-400">
+<span class="material-symbols-outlined text-4xl">search_off</span>
+</div>
+<h4 class="text-lg font-bold">No organizations found</h4>
+<p class="text-[#616f89] text-sm">Try searching for a different name or checking your spelling.</p>
+</div>
+</div>
+<!-- Sticky Bottom Navigation Mock -->
+<div class="border-t border-gray-100 dark:border-slate-800 bg-white/90 dark:bg-background-dark/90 backdrop-blur-md p-2 px-6 flex justify-between items-center">
+<div class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined">search</span>
+<span class="text-[10px] font-bold">Find</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-gray-400">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="text-[10px] font-bold">Orders</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-gray-400">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold">Account</span>
+</div>
+</div>
+</div>
+</body></html>

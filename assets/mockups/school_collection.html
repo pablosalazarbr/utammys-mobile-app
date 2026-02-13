@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Northside High School Collection</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1152d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#111318] dark:text-white transition-colors duration-300">
+<!-- Main Container -->
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden">
+<!-- TopAppBar -->
+<div class="flex items-center bg-white dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-50 border-b border-[#f0f2f4] dark:border-gray-800">
+<div class="text-[#111318] dark:text-white flex size-12 shrink-0 items-center justify-start">
+<span class="material-symbols-outlined cursor-pointer">arrow_back</span>
+</div>
+<h2 class="text-[#111318] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Northside High School</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-transparent text-[#111318] dark:text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0">
+<span class="material-symbols-outlined">shopping_bag</span>
+</button>
+</div>
+</div>
+<!-- ProfileHeader / School Branding -->
+<div class="flex p-4 @container bg-white dark:bg-background-dark">
+<div class="flex w-full flex-col gap-4 items-center">
+<div class="flex gap-4 flex-col items-center">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-xl min-h-32 w-32 border-4 border-white dark:border-gray-700 shadow-md" data-alt="Northside High School navy and gold crest logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDwgd4a0L5ddQHC_ANzErvwDhRFEuQ80LZTQ272u401JPhiHsZTUeI7CRHN_oxUz5Go3iIKtYt8z17DYKJfw5ObJ85EQvR2POEsRf4X5fI0mfpAY2f6pC7p5u59s5G8f3vjj-lMKfl4tSIlY-YYM7gVD9Zd9dLtheIFSRuClIhNVgAfo4eMSdHrhcixWyg30ixkW2BJEdeqf6nemVrzMdfatQLSouPRI1aP-oTktDJWNYe-daUnu5AEs0KzWNB10LLD8yupyGm7FKc");'></div>
+<div class="flex flex-col items-center justify-center">
+<p class="text-[#111318] dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] text-center">Official Uniform Collection</p>
+<div class="flex gap-2 mt-1">
+<span class="bg-[#112a52] text-white px-2 py-0.5 rounded text-xs font-semibold">NAVY</span>
+<span class="bg-[#FFD700] text-[#112a52] px-2 py-0.5 rounded text-xs font-semibold">GOLD</span>
+</div>
+<p class="text-[#616f89] dark:text-gray-400 text-sm font-normal leading-normal text-center mt-2 italic">Excellence Since 1954</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Filter Chips -->
+<div class="flex gap-3 p-4 overflow-x-auto bg-white dark:bg-background-dark no-scrollbar border-b border-[#f0f2f4] dark:border-gray-800">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary text-white pl-4 pr-3 shadow-sm">
+<p class="text-sm font-medium leading-normal">All Items</p>
+<span class="material-symbols-outlined text-sm">check</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-gray-800 border border-[#f0f2f4] dark:border-gray-700 pl-4 pr-3">
+<p class="text-[#111318] dark:text-white text-sm font-medium leading-normal">Boys</p>
+<span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-gray-800 border border-[#f0f2f4] dark:border-gray-700 pl-4 pr-3">
+<p class="text-[#111318] dark:text-white text-sm font-medium leading-normal">Girls</p>
+<span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-gray-800 border border-[#f0f2f4] dark:border-gray-700 pl-4 pr-3">
+<p class="text-[#111318] dark:text-white text-sm font-medium leading-normal">Grade Level</p>
+<span class="material-symbols-outlined text-sm">filter_list</span>
+</button>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-2 gap-4 p-4 mb-20">
+<!-- Item 1 -->
+<div class="flex flex-col gap-3 pb-3 bg-white dark:bg-gray-800/50 rounded-xl overflow-hidden shadow-sm border border-[#f0f2f4] dark:border-gray-800">
+<div class="relative w-full bg-center bg-no-repeat aspect-[3/4] bg-cover" data-alt="Premium navy wool blazer with school crest embroidery" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDzujK6LRHh3Hvy6-o-26pN6dUDOGvqRc9A5Uemj5ffjuZXuoBEBYm-Br2KAmE5n3zN32dDJ3IgRU-O2sh9ZYNsR0wGLK6PAXjerSmyDCn-pJyCmQWXJG9D1NjUIzmuIFe4poEYixCUX8am6OwzS9BXco482JLXZAsK8vcg_yYGpnln7pAahLaZpy7QghaLW22QxnPT1xyOqPq3252jBbsMpAsQ2uE_Z4PIuEbikECvzKPmhbyuZOewQjrSlHBnyO3oIVSQMMwsUp8");'>
+<span class="absolute top-2 left-2 bg-primary/90 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Required</span>
+</div>
+<div class="px-3 pb-2">
+<p class="text-[#111318] dark:text-white text-sm font-bold leading-tight line-clamp-2">Navy Blazer with Gold Crest</p>
+<div class="flex items-center justify-between mt-1">
+<p class="text-primary dark:text-blue-400 text-base font-bold leading-normal">$120.00</p>
+<button class="size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined !text-xl">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex flex-col gap-3 pb-3 bg-white dark:bg-gray-800/50 rounded-xl overflow-hidden shadow-sm border border-[#f0f2f4] dark:border-gray-800">
+<div class="relative w-full bg-center bg-no-repeat aspect-[3/4] bg-cover" data-alt="Crisp white cotton short sleeve polo shirt" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB4HNEZwu_fxw58OIy-2tCxmhPGMGn8Xay52BiQ2RcH61bS8UdgHFQRN7oVhp6WA2SQpIfMw3Pxl3t_Wj4N2-i8ivPgVLv1oiAsUliMPyZs9Q_Ge2ixPmiq5nzgofNeurWiqjFdSjfbVYaogQ7lm88ObVZJ-SJ-mJMqpp_pjFaw2cMjycb7Bmo2ny8_QVX13m8upD1v5k4RB5sAMnNyHRieDdDZind9eEcGIaIP6FHgT-Za21zGpo-8ThBUoaQFYkJmmRB9BiCV9rM");'>
+<span class="absolute top-2 left-2 bg-gray-500/80 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Optional</span>
+</div>
+<div class="px-3 pb-2">
+<p class="text-[#111318] dark:text-white text-sm font-bold leading-tight line-clamp-2">White Short Sleeve Polo</p>
+<div class="flex items-center justify-between mt-1">
+<p class="text-primary dark:text-blue-400 text-base font-bold leading-normal">$25.00</p>
+<button class="size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined !text-xl">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex flex-col gap-3 pb-3 bg-white dark:bg-gray-800/50 rounded-xl overflow-hidden shadow-sm border border-[#f0f2f4] dark:border-gray-800">
+<div class="relative w-full bg-center bg-no-repeat aspect-[3/4] bg-cover" data-alt="Classic grey pleated school uniform skirt" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBPQ2QOK0z-1KNdkc4wZ5bR0bA5Vn0C392TvZBimQXyM2Gfapq0Jv8MspB9HUeFiBgUh2oZ9wutF2XNVyeiRcuG13tzPr-z_nzj2odoTB2vo1lAg8hdzo3V_kfJH1NUIJs796oCvXNC7QR7k2O8UC094_Vhp7vRG_5EE1YMEH2m0fNJU3noSCkWQ6m72s_qzzXJ5YOGdLut-Snk3aLtw6TdR5ddF0_w1DoGh-bKU70uiLUDuE3EpDBo_LPzoow2KcwEl_Oqdz1DJq0");'>
+<span class="absolute top-2 left-2 bg-primary/90 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Required</span>
+</div>
+<div class="px-3 pb-2">
+<p class="text-[#111318] dark:text-white text-sm font-bold leading-tight line-clamp-2">Grey Pleated Skirt (Knee Length)</p>
+<div class="flex items-center justify-between mt-1">
+<p class="text-primary dark:text-blue-400 text-base font-bold leading-normal">$45.00</p>
+<button class="size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined !text-xl">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="flex flex-col gap-3 pb-3 bg-white dark:bg-gray-800/50 rounded-xl overflow-hidden shadow-sm border border-[#f0f2f4] dark:border-gray-800">
+<div class="relative w-full bg-center bg-no-repeat aspect-[3/4] bg-cover" data-alt="Dark navy blue v-neck knit sweater" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBxbj5q-MimwNdRxit4CunCK-vdMHpNOJj-0MSOY4yeMNTPu9MlE8uME_Qr4wwwFHt23Hqh6UomYt9wugSRA2fM7MXqre2ZIHCWiLVnBwQweLJkR1sKBeWMtHZsp6jYgZREkVsx5fKx5y1H7a4XrsoKDWhyTsCLdRxQ9A01E0vWQ4-I0DtjpKAoB_496CLPziuAtZ1pDA2ZU6LPct9UHCwXwh_buE2McUls6zCnbHyMr3rY-SsHERTdbRkSYtpo_oFYw07r8I9cL-k");'>
+</div>
+<div class="px-3 pb-2">
+<p class="text-[#111318] dark:text-white text-sm font-bold leading-tight line-clamp-2">V-Neck Knit Sweater</p>
+<div class="flex items-center justify-between mt-1">
+<p class="text-primary dark:text-blue-400 text-base font-bold leading-normal">$55.00</p>
+<button class="size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined !text-xl">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item 5 -->
+<div class="flex flex-col gap-3 pb-3 bg-white dark:bg-gray-800/50 rounded-xl overflow-hidden shadow-sm border border-[#f0f2f4] dark:border-gray-800">
+<div class="relative w-full bg-center bg-no-repeat aspect-[3/4] bg-cover" data-alt="Golden yellow and navy blue striped school tie" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD0wxVvCl_RdbGRCgE5GZNoZ_EKn65K_16btlqvqby2m31aK_yOklD3AXdYNjxo0_8qfEzuRJQ8cD2Qb0zqxrBM1nWDlRerkCYiyucLVPt-tg_XTviYPjQPXAdMqVur25_HBaAbDlqJtaDCSPsbIK-FeNtpdCCrzH_LlzhCyYi-HEi0YJhuQ_jrhpUlz6SW2HTz4kUgwNTZUk8c8VyzQpTElAkhiAwtQCbvN6etfj4wdVkZOnqFqcD-krvtHgfLBETujX0P7XxVu0A");'>
+<span class="absolute top-2 left-2 bg-primary/90 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Required</span>
+</div>
+<div class="px-3 pb-2">
+<p class="text-[#111318] dark:text-white text-sm font-bold leading-tight line-clamp-2">Official School Tie (Regimental)</p>
+<div class="flex items-center justify-between mt-1">
+<p class="text-primary dark:text-blue-400 text-base font-bold leading-normal">$18.00</p>
+<button class="size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined !text-xl">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item 6 -->
+<div class="flex flex-col gap-3 pb-3 bg-white dark:bg-gray-800/50 rounded-xl overflow-hidden shadow-sm border border-[#f0f2f4] dark:border-gray-800">
+<div class="relative w-full bg-center bg-no-repeat aspect-[3/4] bg-cover" data-alt="Set of three pairs of white cotton school socks" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDCMgRacYgLLW234x2X34gcB5j1fiEtOvri2b7fH2hUq7GN6KBqnQnJiTSlsJ9r0t2oKsNtQzaMdBSTDnCc2FJmZHSzOZtr9Bo_CGdF_xwfADgFUn0LK7HKqTPis0LYAQQqyqSdXpQoZPlb_UxUHmLuoDjlV3Pi1tFbjVDJjU2qArZE_pOqJVMWDlrsiSsr0oM_WLjtlvhMB88cXQJwp2QZd1_jzBe4QmaTmdDGIjERBxChxROJgxVGDtO0f6TX80v_msggqfCjmeY");'>
+</div>
+<div class="px-3 pb-2">
+<p class="text-[#111318] dark:text-white text-sm font-bold leading-tight line-clamp-2">Cotton Socks (3 Pack)</p>
+<div class="flex items-center justify-between mt-1">
+<p class="text-primary dark:text-blue-400 text-base font-bold leading-normal">$12.00</p>
+<button class="size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined !text-xl">add</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- BottomNavBar -->
+<div class="fixed bottom-0 w-full flex gap-2 border-t border-[#f0f2f4] dark:border-gray-800 bg-white dark:bg-background-dark px-4 pb-6 pt-2 z-50">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#616f89] dark:text-gray-400" href="#">
+<span class="material-symbols-outlined">home</span>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">checkroom</span>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Collection</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#616f89] dark:text-gray-400" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Orders</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#616f89] dark:text-gray-400" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Profile</p>
+</a>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Uniform Store Home</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<!-- Top Navigation Bar -->
+<nav class="sticky top-0 z-50 flex items-center bg-white/80 dark:bg-background-dark/80 backdrop-blur-md p-4 pb-2 justify-between border-b border-gray-100 dark:border-gray-800">
+<div class="text-[#111318] dark:text-white flex size-12 shrink-0 items-center justify-start">
+<span class="material-symbols-outlined text-2xl">account_circle</span>
+</div>
+<h2 class="text-primary text-xl font-bold leading-tight tracking-[-0.015em] flex-1 text-center">UniformPro</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-transparent text-[#111318] dark:text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0">
+<span class="material-symbols-outlined text-2xl">shopping_bag</span>
+</button>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-1 pb-24">
+<!-- Hero Section with Header Image -->
+<div class="@container">
+<div class="@[480px]:px-4 @[480px]:py-3">
+<div class="bg-cover bg-center flex flex-col justify-end overflow-hidden bg-white dark:bg-gray-900 @[480px]:rounded-xl min-h-[380px] relative" data-alt="Group of students and professionals wearing diverse uniforms" style='background-image: linear-gradient(0deg, rgba(16, 22, 34, 0.8) 0%, rgba(16, 22, 34, 0.2) 50%, rgba(16, 22, 34, 0) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuAHGMAjn1lyWu0UWqAHrytHhRmKwNaf9QE8uQYOx1-QEnQSr5aQu2BkWxezlpwPoC9lJK9Nbtj7oJTZTt2IajpYuDbaikPCfLLMbNXpphxwW8nQ0QUbEkfLTDU3wWc4OurRWyGhZwCX5cu5VcQYIuUEuw2iMv5OfmyLkObySIEQIz2xmFc4DqlLDBBqYHVM7tU0uvYJrUOTUvLx16NpiR0Pc45xhs7-BTOtqkNW9MlMk8QPFTCOl1cYkmVwWot1inp40dIBOrUPNdM");'>
+<div class="flex flex-col p-6 gap-4">
+<p class="text-white tracking-tight text-3xl font-bold leading-tight">Quality Uniforms for Every Professional Journey</p>
+<p class="text-white/80 text-sm font-light max-w-[80%]">Official provider for over 500+ schools and corporate businesses nationwide.</p>
+<!-- Search Bar Integrated into Hero Area -->
+<div class="w-full mt-2">
+<label class="flex flex-col min-w-40 h-14 w-full shadow-2xl">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full overflow-hidden">
+<div class="text-[#616f89] flex border-none bg-white items-center justify-center pl-4" data-icon="search">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-[#111318] focus:outline-0 focus:ring-0 border-none bg-white focus:border-none h-full placeholder:text-[#616f89] px-4 pl-2 text-base font-normal leading-normal" placeholder="Find your school or business" value=""/>
+</div>
+</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Section Header: Categories -->
+<div class="flex items-center justify-between px-4 pb-2 pt-8">
+<h2 class="text-[#111318] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">Shop by Category</h2>
+<button class="text-primary text-sm font-semibold">View All</button>
+</div>
+<!-- ImageGrid: Category Cards -->
+<div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-4 p-4">
+<div class="bg-cover bg-center flex flex-col gap-3 rounded-xl justify-end p-4 aspect-[4/5] relative group" data-alt="Selection of school blazers and ties" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 50%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBD2HWRtYe5gWo1SXIe2G4Tp2TjocroixsJRE--HaX1oYRaBJv-xUlcn0Pb2fW5V6MwxAiN_kPcjmBl-s8G1ha-VOAd-APmlEZhpTfrJScuR5OmFHmONKXDoc_TcOPcN8-l4LiRbo1kv6zkyyfCmqUPyGXXYJDDLiWurKwUwc3-kSaWURcG8T4W6ZXTNMvEOW8VkmL6CrEkdu9-a0J_dUR8Y0YC5INCeGaVyEyNd_3DRhmueUz7hKnwxaVZWI9mn51evsnaLg-e53A");'>
+<div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+<p class="text-white text-lg font-bold leading-tight relative z-10">School Uniforms</p>
+</div>
+<div class="bg-cover bg-center flex flex-col gap-3 rounded-xl justify-end p-4 aspect-[4/5] relative group" data-alt="Professional business shirts and jackets" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 50%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuCOrOLz0ojwJfLkSEwszW0cWM-vVIqbG-iSr1Fs_ue2gP61jrLii-q7lWUyF1Pb120_59c1iw4lyW3lZIVEAKv4hNCZXAf8Ca9ykwn3kTf1EtRg7Cjya3dcTb-BNzloI9h-O5qqB7kvHRUm6lBqoNCcq7lJ1yfUxks0r4CXhUy2nl2wR_quKFMVHOmIATS4pd2sfOXz9hCFQOV3YhupFRqS__wTV0cUfCU3p3zUx0kC4Kj1_TKPk0XKQiKBoJBKKnaVO25JJboTg3k");'>
+<div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+<p class="text-white text-lg font-bold leading-tight relative z-10">Corporate Wear</p>
+</div>
+<div class="bg-cover bg-center flex flex-col gap-3 rounded-xl justify-end p-4 aspect-[4/5] relative group" data-alt="High quality medical scrubs and lab coats" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 50%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuAT002qMVvAkOuv6rT-kSCZkWSKc52qaKzhwasU-OBHejvhxgTJxSAaLCT4ang2keTHxK8mJT1DLnzYFORTF76rh0EoR2wkeGmXhbvan508WNhueb67KgjHqBPlc9LaTUIa_KALzuDa1j0ScwlvyqzK1MQhnb9gz6-58xJrzDFMFDAd8e62jx70-HhU_KlOrxwbBtusACQBZdkfAJnc_R5m7vwFcF_TicWNUEP11e2MfKFUFK-t1F_UqD2UedBRX5qiL1cuycodEwg");'>
+<div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+<p class="text-white text-lg font-bold leading-tight relative z-10">Medical &amp; Workwear</p>
+</div>
+</div>
+<!-- Section Header: Featured Schools -->
+<h2 class="text-[#111318] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-6">Popular Schools</h2>
+<!-- Horizontal Scroll Section -->
+<div class="flex overflow-x-auto gap-4 px-4 pb-4 no-scrollbar">
+<div class="flex flex-col items-center gap-2 min-w-[100px]">
+<div class="w-20 h-20 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden" data-alt="Lincoln High School Logo">
+<span class="material-symbols-outlined text-gray-400 text-3xl">school</span>
+</div>
+<span class="text-xs font-medium text-center text-[#111318] dark:text-white">Lincoln High</span>
+</div>
+<div class="flex flex-col items-center gap-2 min-w-[100px]">
+<div class="w-20 h-20 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden" data-alt="Westside Academy Logo">
+<span class="material-symbols-outlined text-gray-400 text-3xl">account_balance</span>
+</div>
+<span class="text-xs font-medium text-center text-[#111318] dark:text-white">Westside Acad.</span>
+</div>
+<div class="flex flex-col items-center gap-2 min-w-[100px]">
+<div class="w-20 h-20 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden" data-alt="St. Peters Logo">
+<span class="material-symbols-outlined text-gray-400 text-3xl">shield_person</span>
+</div>
+<span class="text-xs font-medium text-center text-[#111318] dark:text-white">St. Peters</span>
+</div>
+<div class="flex flex-col items-center gap-2 min-w-[100px]">
+<div class="w-20 h-20 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden" data-alt="Central College Logo">
+<span class="material-symbols-outlined text-gray-400 text-3xl">menu_book</span>
+</div>
+<span class="text-xs font-medium text-center text-[#111318] dark:text-white">Central Coll.</span>
+</div>
+</div>
+<!-- Trust Footer Info -->
+<div class="mx-4 mt-8 p-6 bg-primary/5 dark:bg-primary/10 rounded-xl border border-primary/10">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-primary">verified</span>
+<span class="text-[#111318] dark:text-white font-bold">Trusted Partner</span>
+</div>
+<p class="text-[#616f89] dark:text-gray-400 text-sm leading-relaxed">
+                All uniforms are manufactured following official institution guidelines to ensure 100% compliance with dress codes.
+            </p>
+</div>
+</main>
+<!-- Bottom Tab Bar (iOS Style) -->
+<div class="fixed bottom-0 left-0 right-0 h-20 bg-white/90 dark:bg-background-dark/90 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 flex items-center justify-around px-6 pb-4">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined font-variation-settings: 'FILL' 1">home</span>
+<span class="text-[10px] font-bold">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400">
+<span class="material-symbols-outlined">search</span>
+<span class="text-[10px] font-medium">Find</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="text-[10px] font-medium">Orders</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</div>
+</body></html>

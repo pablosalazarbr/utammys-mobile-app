@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Secure Checkout</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1152d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .apple-pay-button {
+            background-color: black;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 56px;
+            border-radius: 0.5rem;
+            width: 100%;
+            font-weight: 500;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#111318] dark:text-white min-h-screen">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 bg-white dark:bg-background-dark border-b border-gray-200 dark:border-gray-800">
+<div class="flex items-center p-4 justify-between">
+<div class="text-[#111318] dark:text-white flex size-12 shrink-0 items-center cursor-pointer">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+<h2 class="text-[#111318] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Secure Checkout</h2>
+</div>
+</header>
+<main class="max-w-md mx-auto pb-40">
+<!-- Progress Bar -->
+<div class="flex flex-col gap-3 p-4 bg-white dark:bg-background-dark">
+<div class="flex gap-6 justify-between">
+<p class="text-primary text-base font-semibold leading-normal">Shipping</p>
+<p class="text-[#616f89] dark:text-gray-400 text-sm font-normal leading-normal">Step 1 of 3</p>
+</div>
+<div class="rounded-full bg-[#dbdfe6] dark:bg-gray-700 h-2 w-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 33.33%;"></div>
+</div>
+<p class="text-[#616f89] dark:text-gray-400 text-sm font-normal leading-normal">Next: Payment &amp; Review</p>
+</div>
+<!-- Shipping Address Section -->
+<section class="mt-2 bg-white dark:bg-background-dark pb-4">
+<h3 class="text-[#111318] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Shipping Address</h3>
+<div class="flex flex-col gap-1 px-4 py-2">
+<label class="flex flex-col flex-1">
+<p class="text-[#111318] dark:text-gray-200 text-sm font-medium leading-normal pb-1">Full Name</p>
+<div class="relative">
+<input class="form-input flex w-full rounded-lg text-[#111318] dark:text-white border border-[#dbdfe6] dark:border-gray-700 bg-white dark:bg-gray-800 h-14 p-[15px] focus:ring-2 focus:ring-primary focus:border-primary" value="Alex Johnson"/>
+<span class="material-symbols-outlined absolute right-4 top-4 text-green-500">check_circle</span>
+</div>
+</label>
+</div>
+<div class="flex flex-col gap-1 px-4 py-2">
+<label class="flex flex-col flex-1">
+<p class="text-[#111318] dark:text-gray-200 text-sm font-medium leading-normal pb-1">Street Address</p>
+<input class="form-input flex w-full rounded-lg text-[#111318] dark:text-white border border-[#dbdfe6] dark:border-gray-700 bg-white dark:bg-gray-800 h-14 p-[15px] focus:ring-2 focus:ring-primary" placeholder="123 Business Way"/>
+</label>
+</div>
+<div class="grid grid-cols-2 gap-4 px-4 py-2">
+<label class="flex flex-col">
+<p class="text-[#111318] dark:text-gray-200 text-sm font-medium leading-normal pb-1">City</p>
+<input class="form-input flex w-full rounded-lg text-[#111318] dark:text-white border border-[#dbdfe6] dark:border-gray-700 bg-white dark:bg-gray-800 h-14 p-[15px] focus:ring-2 focus:ring-primary" placeholder="New York"/>
+</label>
+<label class="flex flex-col">
+<p class="text-[#111318] dark:text-gray-200 text-sm font-medium leading-normal pb-1">Zip Code</p>
+<input class="form-input flex w-full rounded-lg text-[#111318] dark:text-white border border-[#dbdfe6] dark:border-gray-700 bg-white dark:bg-gray-800 h-14 p-[15px] focus:ring-2 focus:ring-primary" placeholder="10001"/>
+</label>
+</div>
+</section>
+<!-- Delivery Method Section -->
+<section class="mt-2 bg-white dark:bg-background-dark p-4">
+<h3 class="text-[#111318] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] pb-4">Delivery Method</h3>
+<div class="grid grid-cols-2 gap-3">
+<div class="flex flex-col p-4 border-2 border-primary bg-primary/5 rounded-xl cursor-pointer">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-primary">home</span>
+<div class="size-5 rounded-full border-4 border-primary bg-white"></div>
+</div>
+<p class="mt-4 font-bold text-sm">Home Delivery</p>
+<p class="text-xs text-[#616f89] dark:text-gray-400">$5.00 • 2-3 days</p>
+</div>
+<div class="flex flex-col p-4 border border-[#dbdfe6] dark:border-gray-700 rounded-xl cursor-pointer">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-gray-400">school</span>
+<div class="size-5 rounded-full border border-gray-300"></div>
+</div>
+<p class="mt-4 font-bold text-sm">School Pick-up</p>
+<p class="text-xs text-[#616f89] dark:text-gray-400">Free • Selected Site</p>
+</div>
+</div>
+</section>
+<!-- Payment Method Section -->
+<section class="mt-2 bg-white dark:bg-background-dark p-4">
+<div class="flex justify-between items-center pb-4">
+<h3 class="text-[#111318] dark:text-white text-lg font-bold">Payment Method</h3>
+<div class="flex items-center gap-1 text-primary text-sm font-semibold cursor-pointer">
+<span class="material-symbols-outlined text-sm">lock</span>
+                    Secure
+                </div>
+</div>
+<!-- Apple Pay Button -->
+<button class="apple-pay-button mb-4">
+<span class="mr-1">Pay with</span>
+<svg fill="white" height="19" viewbox="0 0 45 19" width="45">
+<path d="M11.66 14.88c-.62 0-1.12-.17-1.49-.5s-.56-.84-.56-1.52c0-.68.19-1.2.57-1.56s1-.54 1.84-.54h1.75v-.42c0-.36-.08-.63-.25-.82s-.43-.28-.79-.28c-.66 0-1.01.25-1.07.74h-1.95c.08-1.29.98-1.93 2.72-1.93 1.05 0 1.84.23 2.37.7s.8 1.15.8 2.05v3.87h-1.78v-1.02h-.04c-.31.78-.97 1.17-1.97 1.17zm.38-1.52c.4 0 .73-.1.97-.3s.36-.5.36-.88v-.45h-1.46c-.45 0-.67.16-.67.49 0 .34.27.51.8.51zM19.1 17.5l-.22-2.7h-.04c-.35.88-1.04 1.32-2.07 1.32-.98 0-1.72-.34-2.22-1.01s-.75-1.63-.75-2.88c0-1.29.26-2.28.79-2.97s1.28-1.04 2.25-1.04c.89 0 1.55.37 1.98 1.1h.04v-.96h1.79V17.5H19.1zm-.24-5.32c0-.5-.09-.89-.27-1.16s-.46-.41-.83-.41c-.41 0-.71.16-.91.49s-.29.82-.29 1.48c0 .6.09 1.05.27 1.33s.46.42.84.42c.38 0 .66-.14.84-.42s.27-.79.27-1.51c0-.07.03-.15.08-.22zM27.24 17.5l-.22-2.7h-.04c-.35.88-1.04 1.32-2.07 1.32-.98 0-1.72-.34-2.22-1.01s-.75-1.63-.75-2.88c0-1.29.26-2.28.79-2.97s1.28-1.04 2.25-1.04c.89 0 1.55.37 1.98 1.1h.04v-.96h1.79V17.5h-1.78zm-.25-5.32c0-.5-.09-.89-.27-1.16s-.46-.41-.83-.41c-.41 0-.71.16-.91.49s-.29.82-.29 1.48c0 .6.09 1.05.27 1.33s.46.42.84.42c.38 0 .66-.14.84-.42s.27-.79.27-1.51c0-.07.03-.15.08-.22zM36.19 2.5c-.53 0-.91.24-1.13.72h-.03c-.04-.2-.07-.4-.07-.6V0h-2.12v12.42c0 .46.06.84.18 1.14s.35.56.7.77.8.31 1.34.31c1.32 0 2.28-.51 2.87-1.54s.88-2.45.88-4.25c0-1.85-.3-3.26-.89-4.24s-1.46-1.47-2.73-1.47zm-.07 10.42c-.44 0-.77-.16-.99-.49s-.33-.84-.33-1.52V5.01c0-.53.08-.95.25-1.27s.47-.48.89-.48c.45 0 .76.19.95.56s.28.97.28 1.8v3.42c0 .85-.1 1.48-.29 1.88s-.47.6-.81.6zM44.57 5.08h-2.12v1.39h-.03c-.22-.48-.6-.72-1.14-.72-1.28 0-2.15.5-2.73 1.49s-.87 2.45-.87 4.28c0 1.81.3 3.22.89 4.24s1.5 1.53 2.74 1.53c1.37 0 2.15-.55 2.51-1.66l.24 1.52h1.96l-.61-7.83-.84-4.24zm-1.1 6.84c-.2.38-.51.57-.93.57-.45 0-.76-.19-.94-.56s-.27-.97-.27-1.8V6.71c0-.85.1-1.48.29-1.88s.47-.6.82-.6c.44 0 .77.16.99.49s.33.84.33 1.52v5.18c0 .24-.09.41-.29.5zM3.86 12.18c-1.2 0-2.12-.45-2.76-1.35s-.96-2.22-.96-3.95c0-1.74.34-3.08 1.02-4.02S2.82 1.42 3.99 1.42c.86 0 1.53.25 2.01.76s.72 1.25.72 2.23H4.81c0-.4-.08-.7-.24-.9s-.39-.3-.68-.3c-.36 0-.63.16-.81.48s-.27.87-.27 1.63V7.2c0 .76.09 1.31.27 1.64s.45.49.81.49c.3 0 .53-.1.68-.3s.24-.5.24-.91h1.91c0 .99-.25 1.74-.74 2.26s-1.19.78-2.07.78z"></path>
+</svg>
+</button>
+<div class="relative flex items-center py-2 mb-2">
+<div class="flex-grow border-t border-[#dbdfe6] dark:border-gray-700"></div>
+<span class="flex-shrink mx-4 text-gray-400 text-xs uppercase tracking-widest font-bold">OR</span>
+<div class="flex-grow border-t border-[#dbdfe6] dark:border-gray-700"></div>
+</div>
+<!-- Saved Cards -->
+<div class="space-y-3">
+<div class="flex items-center p-4 border-2 border-primary bg-primary/5 rounded-xl">
+<div class="bg-white dark:bg-gray-800 p-2 rounded border border-gray-200 dark:border-gray-700 mr-4">
+<span class="material-symbols-outlined text-blue-600">credit_card</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold">Visa ending in 4242</p>
+<p class="text-xs text-[#616f89] dark:text-gray-400">Expires 12/26</p>
+</div>
+<div class="size-5 rounded-full border-4 border-primary bg-white"></div>
+</div>
+<div class="flex items-center p-4 border border-[#dbdfe6] dark:border-gray-700 rounded-xl">
+<div class="bg-white dark:bg-gray-800 p-2 rounded border border-gray-200 dark:border-gray-700 mr-4">
+<span class="material-symbols-outlined text-orange-500">payments</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold">Mastercard ending in 8891</p>
+<p class="text-xs text-[#616f89] dark:text-gray-400">Expires 08/25</p>
+</div>
+<div class="size-5 rounded-full border border-gray-300"></div>
+</div>
+<button class="flex items-center justify-center w-full p-4 border-2 border-dashed border-[#dbdfe6] dark:border-gray-700 rounded-xl text-primary font-semibold text-sm">
+<span class="material-symbols-outlined mr-2">add</span>
+                    Add New Payment Method
+                </button>
+</div>
+</section>
+<!-- Order Summary Condensed -->
+<section class="mt-2 bg-white dark:bg-background-dark p-4 border-b border-gray-100 dark:border-gray-800">
+<h3 class="text-[#111318] dark:text-white text-lg font-bold pb-4">Order Summary</h3>
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<span class="text-[#616f89] dark:text-gray-400">Subtotal (3 items)</span>
+<span class="font-medium">$124.97</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-[#616f89] dark:text-gray-400">Shipping</span>
+<span class="font-medium">$5.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-[#616f89] dark:text-gray-400">Estimated Tax</span>
+<span class="font-medium">$10.62</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Sticky Footer -->
+<div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-background-dark border-t border-gray-200 dark:border-gray-800 p-4 pb-8 max-w-md mx-auto shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+<div class="flex justify-between items-center mb-4 px-2">
+<span class="text-lg font-bold">Total</span>
+<span class="text-xl font-bold text-primary">$140.59</span>
+</div>
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors">
+            Place Order
+            <span class="material-symbols-outlined">lock</span>
+</button>
+</div>
+</body></html>
