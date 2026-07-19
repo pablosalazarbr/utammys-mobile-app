@@ -86,6 +86,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: context.tSurface,
+      routeSettings: const RouteSettings(name: 'add-order-sheet'),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),

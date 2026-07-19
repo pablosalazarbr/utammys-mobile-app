@@ -14,13 +14,13 @@ class NavController {
 
   /// Rutas donde el pill NO debe mostrarse.
   static const Set<String> hiddenRoutes = {
-    '/cart',
     'product-detail',
     'checkout',
     'order-confirmation',
     'privacy',
     'order-detail',
     'qr-scan',
+    'add-order-sheet',
   };
 
   /// Si el pill debe mostrarse en la ruta actual.

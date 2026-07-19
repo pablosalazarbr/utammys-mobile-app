@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:utammys_mobile_app/utils/logger.dart';
 import 'package:utammys_mobile_app/models/product_model.dart';
 
-/// Servicio para gestionar el carrito de compras
-class CartService {
+/// Servicio para gestionar el carrito de compras.
+/// Es un [ChangeNotifier] para que la UI (ej. el badge del pill) se actualice
+/// en vivo al agregar/quitar productos.
+class CartService extends ChangeNotifier {
   static final CartService _instance = CartService._internal();
 
   final List<CartItem> _cartItems = [];
@@ -58,6 +61,7 @@ class CartService {
     } catch (e) {
       logDebug('[CartService] Error al agregar item: $e');
     }
+    notifyListeners();
   }
 
   /// Remover un item del carrito por índice
@@ -65,6 +69,7 @@ class CartService {
     if (index >= 0 && index < _cartItems.length) {
       logDebug('[CartService] Producto removido: ${_cartItems[index].product.name}');
       _cartItems.removeAt(index);
+      notifyListeners();
     }
   }
 
@@ -83,6 +88,7 @@ class CartService {
           customizationCost: item.customizationCost,
         );
         logDebug('[CartService] Cantidad actualizada: ${item.product.name} -> $quantity');
+        notifyListeners();
       }
     }
   }
@@ -91,6 +97,7 @@ class CartService {
   void clearCart() {
     _cartItems.clear();
     logDebug('[CartService] Carrito vaciado');
+    notifyListeners();
   }
 
   /// Obtener un item por índice

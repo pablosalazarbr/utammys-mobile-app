@@ -80,6 +80,10 @@ class _PillBar extends StatelessWidget {
           child: ValueListenableBuilder<int>(
             valueListenable: NavController.instance.activeIndex,
             builder: (context, active, _) {
+              // Escucha al carrito para actualizar el badge en vivo.
+              return ListenableBuilder(
+                listenable: CartService(),
+                builder: (context, _) {
               return Row(
                 children: [
                   Expanded(
@@ -124,6 +128,8 @@ class _PillBar extends StatelessWidget {
                     ),
                   ),
                 ],
+              );
+                },
               );
             },
           ),

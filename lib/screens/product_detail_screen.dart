@@ -4,6 +4,7 @@ import 'package:utammys_mobile_app/helpers/image_url_helper.dart';
 import 'package:utammys_mobile_app/models/product_model.dart';
 import 'package:utammys_mobile_app/services/cart_service.dart';
 import 'package:utammys_mobile_app/theme/app_theme.dart';
+import 'package:utammys_mobile_app/widgets/app_notification.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -20,6 +21,7 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int _quantity = 1;
   bool _isFavorite = false;
+  bool _isAdding = false;
   Map<int, bool> _selectedOptions = {};
   double _additionalPrice = 0;
   ProductSize? _selectedSize;
@@ -92,6 +94,44 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   double getTotalPrice() {
     final basePrice = _selectedSize?.price ?? widget.product.price ?? widget.product.getMinPrice() ?? 0.0;
     return ((basePrice + _additionalPrice) * _quantity);
+  }
+
+  Future<void> _addToCart() async {
+    if (_selectedSize == null) {
+      showAppNotification(
+        context,
+        'Selecciona una talla para continuar',
+        icon: Icons.info_outline,
+        accent: const Color(0xFFD97706),
+      );
+      return;
+    }
+
+    setState(() => _isAdding = true);
+
+    final customizationText = _customizationController.text.trim();
+    final cartItem = CartItem(
+      product: widget.product,
+      size: _selectedSize,
+      quantity: _quantity,
+      customizationText:
+          customizationText.isNotEmpty ? customizationText : null,
+      customizationCost:
+          customizationText.isNotEmpty ? _getCustomizationCost() : 0.0,
+    );
+
+    CartService().addItem(cartItem);
+
+    // Breve espera para que el estado de carga se perciba.
+    await Future.delayed(const Duration(milliseconds: 400));
+    if (!mounted) return;
+    setState(() => _isAdding = false);
+
+    showAppNotification(
+      context,
+      'Añadido a la bolsa: ${_quantity}x ${widget.product.name} '
+      '(Talla ${_selectedSize!.size})',
+    );
   }
 
   String _getImageUrl(String? mediaPath) {
@@ -744,61 +784,34 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              onPressed: () {
-                if (_selectedSize == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Por favor selecciona una talla'),
-                      backgroundColor: Colors.orange,
-                      duration: Duration(seconds: 2),
+              onPressed: _isAdding ? null : _addToCart,
+              child: _isAdding
+                  ? SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      ),
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.shopping_bag_outlined,
+                            color: Theme.of(context).colorScheme.onPrimary),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Añadir a la Bolsa | Q${getTotalPrice().toStringAsFixed(2)}',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                  return;
-                }
-                
-                // Crear CartItem y agregarlo al carrito
-                final customizationText = _customizationController.text.trim();
-                final cartItem = CartItem(
-                  product: widget.product,
-                  size: _selectedSize,
-                  quantity: _quantity,
-                  customizationText: customizationText.isNotEmpty ? customizationText : null,
-                  customizationCost: customizationText.isNotEmpty ? _getCustomizationCost() : 0.0,
-                );
-                
-                // Usar CartService para agregar al carrito
-                CartService().addItem(cartItem);
-                
-                // Mostrar confirmación con personalización si aplica
-                String message = 'Añadido a la bolsa: ${_quantity}x ${widget.product.name} - Talla: ${_selectedSize!.size}';
-                if (customizationText.isNotEmpty) {
-                  message += '\nPersonalización: $customizationText (+Q${_getCustomizationCost().toStringAsFixed(2)})';
-                }
-                
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(message),
-                    backgroundColor: Colors.green,
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.shopping_bag_outlined,
-                      color: Theme.of(context).colorScheme.onPrimary),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Añadir a la Bolsa | Q${getTotalPrice().toStringAsFixed(2)}',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
             ),
           ),
         ),

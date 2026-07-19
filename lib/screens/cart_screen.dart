@@ -40,6 +40,37 @@ class _CartScreenState extends State<CartScreen> {
           icon: Icon(Icons.arrow_back_ios, color: context.tTextPrimary, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
+        // El botón de pago vive en el header (el pill navega abajo).
+        actions: [
+          if (cartItems.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 8, 12, 8),
+              child: ElevatedButton(
+                onPressed: () => _proceedToCheckout(subtotal),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Proceder a Pago',
+                        style: TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w600)),
+                    const SizedBox(width: 6),
+                    Icon(Icons.arrow_forward,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.onPrimary),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
       body: cartItems.isEmpty
           ? Center(
@@ -81,7 +112,7 @@ class _CartScreenState extends State<CartScreen> {
               ),
             )
           : SingleChildScrollView(
-                  padding: const EdgeInsets.only(bottom: 24),
+                  padding: const EdgeInsets.only(bottom: 120),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -174,76 +205,51 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                 ),
                 
-      bottomNavigationBar: cartItems.isEmpty
-          ? null
-          : _buildCheckoutBar(context, subtotal),
     );
   }
 
-  Widget _buildCheckoutBar(BuildContext context, double subtotal) {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.tSurface,
-        border: Border(
-          top: BorderSide(color: context.tDivider),
+  Future<void> _proceedToCheckout(double subtotal) async {
+    if (_cartService.cartItems.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Tu bolsa está vacía'),
+          backgroundColor: Colors.red,
         ),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: TammysPrimaryButton(
-            label: 'Proceder a Pago',
-            icon: Icons.arrow_forward,
-            onPressed: () {
-              if (_cartService.cartItems.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Tu bolsa está vacía'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-                return;
-              }
+      );
+      return;
+    }
 
-              // Navegar a checkout
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  settings: const RouteSettings(name: 'checkout'),
-                  builder: (context) => CheckoutScreen(
-                    cartItems: _cartService.cartItems,
-                    cartTotal: subtotal,
-                  ),
-                ),
-              ).then((orderData) {
-                if (orderData != null && orderData is Map<String, dynamic>) {
-                  // Vaciar el carrito tras la compra exitosa
-                  setState(() {
-                    _cartService.clearCart();
-                  });
-                  // Guardar el pedido en "Mis Pedidos" para seguimiento
-                  OrdersService.saveFromCheckout(orderData);
-                  // Mostrar pantalla de confirmación
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      settings:
-                          const RouteSettings(name: 'order-confirmation'),
-                      builder: (context) => OrderConfirmationScreen(
-                        orderData: orderData,
-                        buyerName:
-                            orderData['buyer_name'] as String? ?? 'Cliente',
-                      ),
-                    ),
-                  );
-                }
-              });
-            },
-          ),
+    final orderData = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: 'checkout'),
+        builder: (context) => CheckoutScreen(
+          cartItems: _cartService.cartItems,
+          cartTotal: subtotal,
         ),
       ),
     );
+
+    if (!mounted) return;
+    if (orderData != null && orderData is Map<String, dynamic>) {
+      // Vaciar el carrito tras la compra exitosa
+      setState(() {
+        _cartService.clearCart();
+      });
+      // Guardar el pedido en "Mis Pedidos" para seguimiento
+      OrdersService.saveFromCheckout(orderData);
+      // Mostrar pantalla de confirmación
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          settings: const RouteSettings(name: 'order-confirmation'),
+          builder: (context) => OrderConfirmationScreen(
+            orderData: orderData,
+            buyerName: orderData['buyer_name'] as String? ?? 'Cliente',
+          ),
+        ),
+      );
+    }
   }
 
   double _calculateSubtotal(List<CartItem> cartItems) {
