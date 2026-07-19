@@ -1,13 +1,41 @@
-import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image/image.dart' as img;
 import 'package:zxing2/qrcode.dart';
 import 'package:utammys_mobile_app/utils/logger.dart';
 
-/// Escanea un QR (foto + decodificación con zxing2 en Dart puro) y devuelve
-/// (Navigator.pop) el texto detectado. Compatible con simulador arm64.
-/// La cámara solo existe en dispositivos físicos; en simulador muestra un aviso.
+/// Decodifica un QR desde los bytes BGRA de un frame (corre en un isolate).
+String? _decodeQrFromBgra(Map<String, dynamic> args) {
+  final bytes = args['bytes'] as Uint8List;
+  final w = args['w'] as int;
+  final h = args['h'] as int;
+  final bpr = args['bpr'] as int;
+
+  final pixels = Int32List(w * h);
+  for (int y = 0; y < h; y++) {
+    final rowStart = y * bpr;
+    final outStart = y * w;
+    for (int x = 0; x < w; x++) {
+      final i = rowStart + (x << 2); // 4 bytes por pixel (BGRA)
+      final b = bytes[i];
+      final g = bytes[i + 1];
+      final r = bytes[i + 2];
+      pixels[outStart + x] = 0xFF000000 | (r << 16) | (g << 8) | b;
+    }
+  }
+
+  try {
+    final source = RGBLuminanceSource(w, h, pixels);
+    final bitmap = BinaryBitmap(HybridBinarizer(source));
+    final result = QRCodeReader().decode(bitmap);
+    return result.text;
+  } catch (_) {
+    return null;
+  }
+}
+
+/// Escanea un QR en vivo con la cámara y devuelve (Navigator.pop) el texto.
+/// Compatible con simulador arm64 (en simulador no hay cámara → aviso).
 class QrScanScreen extends StatefulWidget {
   const QrScanScreen({super.key});
 
@@ -19,7 +47,10 @@ class _QrScanScreenState extends State<QrScanScreen> {
   CameraController? _controller;
   bool _initializing = true;
   String? _initError;
-  bool _busy = false;
+
+  bool _handled = false;
+  bool _decoding = false;
+  DateTime _lastAttempt = DateTime.fromMillisecondsSinceEpoch(0);
 
   @override
   void initState() {
@@ -43,10 +74,12 @@ class _QrScanScreenState extends State<QrScanScreen> {
       );
       final controller = CameraController(
         back,
-        ResolutionPreset.high,
+        ResolutionPreset.medium,
         enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.bgra8888,
       );
       await controller.initialize();
+      await controller.startImageStream(_onFrame);
       if (!mounted) return;
       setState(() {
         _controller = controller;
@@ -61,49 +94,42 @@ class _QrScanScreenState extends State<QrScanScreen> {
     }
   }
 
-  Future<void> _capture() async {
-    final controller = _controller;
-    if (controller == null || _busy) return;
-    setState(() => _busy = true);
+  Future<void> _onFrame(CameraImage image) async {
+    if (_handled || _decoding) return;
+    final now = DateTime.now();
+    if (now.difference(_lastAttempt).inMilliseconds < 250) return;
+    _lastAttempt = now;
+    _decoding = true;
     try {
-      final file = await controller.takePicture();
-      final bytes = await File(file.path).readAsBytes();
-      final decoded = img.decodeImage(bytes);
-      if (decoded == null) throw Exception('No se pudo procesar la imagen');
-
-      final rgb = decoded.convert(numChannels: 4);
-      final source = RGBLuminanceSource(
-        rgb.width,
-        rgb.height,
-        rgb.getBytes(order: img.ChannelOrder.abgr).buffer.asInt32List(),
-      );
-      final bitmap = BinaryBitmap(HybridBinarizer(source));
-      final result = QRCodeReader().decode(bitmap);
-      final text = result.text;
-      if (!mounted) return;
-      if (text.isNotEmpty) {
-        Navigator.pop(context, text);
-        return;
+      final plane = image.planes.first;
+      final text = await compute(_decodeQrFromBgra, {
+        'bytes': plane.bytes,
+        'w': image.width,
+        'h': image.height,
+        'bpr': plane.bytesPerRow,
+      });
+      if (!_handled && text != null && text.isNotEmpty) {
+        _handled = true;
+        await _controller?.stopImageStream();
+        if (mounted) Navigator.pop(context, text);
       }
-      _showMessage('No detectamos un código. Intenta de nuevo.');
-    } on NotFoundException {
-      _showMessage('No detectamos un QR. Centra el código e intenta de nuevo.');
     } catch (e) {
       logDebug('[QrScan] decode error: $e');
-      _showMessage('No se pudo leer el código. Intenta de nuevo.');
     } finally {
-      if (mounted) setState(() => _busy = false);
+      _decoding = false;
     }
-  }
-
-  void _showMessage(String msg) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
+    final c = _controller;
+    _controller = null;
+    if (c != null) {
+      if (c.value.isStreamingImages) {
+        c.stopImageStream().catchError((_) {});
+      }
+      c.dispose();
+    }
     super.dispose();
   }
 
@@ -122,6 +148,25 @@ class _QrScanScreenState extends State<QrScanScreen> {
         ),
       ),
       body: _buildBody(),
+    );
+  }
+
+  /// Cámara a pantalla completa (cover) respetando el aspect ratio real.
+  Widget _fullScreenPreview() {
+    final controller = _controller!;
+    final preview = controller.value.previewSize;
+    if (!controller.value.isInitialized || preview == null) {
+      return const ColoredBox(color: Colors.black);
+    }
+    return FittedBox(
+      fit: BoxFit.cover,
+      clipBehavior: Clip.hardEdge,
+      child: SizedBox(
+        // previewSize viene en horizontal; se invierte para retrato.
+        width: preview.height,
+        height: preview.width,
+        child: CameraPreview(controller),
+      ),
     );
   }
 
@@ -159,47 +204,31 @@ class _QrScanScreenState extends State<QrScanScreen> {
     return Stack(
       alignment: Alignment.center,
       children: [
-        Positioned.fill(child: CameraPreview(_controller!)),
-        // Marco guía
+        Positioned.fill(child: _fullScreenPreview()),
+        // Marco guía con overlay oscuro alrededor (spotlight).
         Container(
-          width: 240,
-          height: 240,
+          width: 250,
+          height: 250,
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.white70, width: 2),
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        Positioned(
-          bottom: 48,
-          left: 24,
-          right: 24,
-          child: Column(
-            children: [
-              const Text(
-                'Centra el QR y toca el botón para capturar.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white, fontSize: 14),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton.icon(
-                onPressed: _busy ? null : _capture,
-                icon: _busy
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.black),
-                      )
-                    : const Icon(Icons.qr_code_scanner),
-                label: Text(_busy ? 'Leyendo…' : 'Capturar'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-                ),
+            border: Border.all(color: Colors.white, width: 3),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.4),
+                blurRadius: 0,
+                spreadRadius: 2000,
               ),
             ],
+          ),
+        ),
+        const Positioned(
+          bottom: 60,
+          left: 24,
+          right: 24,
+          child: Text(
+            'Apunta la cámara al código QR de tu correo.\nLo detectamos automáticamente.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontSize: 14, height: 1.4),
           ),
         ),
       ],

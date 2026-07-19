@@ -80,7 +80,9 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: context.tScaffold,
       resizeToAvoidBottomInset: false,
-      body: SingleChildScrollView(
+      body: SafeArea(
+        bottom: false,
+        child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -103,6 +105,7 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 110),
           ],
         ),
+      ),
       ),
     );
   }

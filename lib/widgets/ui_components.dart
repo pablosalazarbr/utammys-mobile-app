@@ -401,6 +401,8 @@ class TammysTextField extends StatelessWidget {
       keyboardType: keyboardType,
       minLines: minLines,
       maxLines: maxLines,
+      // El teclado (iOS) sigue el tema, evitando un teclado claro en modo oscuro.
+      keyboardAppearance: Theme.of(context).brightness,
       style: TextStyle(color: scheme.onSurface),
       decoration: InputDecoration(
         hintText: hint,

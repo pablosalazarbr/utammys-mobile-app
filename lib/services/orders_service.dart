@@ -4,7 +4,7 @@ import 'package:utammys_mobile_app/services/orders_storage.dart';
 import 'package:utammys_mobile_app/utils/logger.dart';
 
 /// URL pública de la tienda (para abrir el seguimiento en web).
-const String kStoreBaseUrl = 'https://shop.uniformestamys.com';
+const String kStoreBaseUrl = 'https://uniformestamys.com';
 
 /// Excepción amigable para mostrar en UI.
 class OrderTrackingException implements Exception {
