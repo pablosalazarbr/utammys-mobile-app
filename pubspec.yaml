@@ -14,6 +14,11 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_inappwebview: ^6.0.0
   connectivity_plus: ^6.0.0
+  shared_preferences: ^2.2.2
+  package_info_plus: ^8.0.0
+  camera: ^0.11.0
+  zxing2: ^0.2.3
+  image: ^4.0.0
 
 dev_dependencies:
   flutter_test:
@@ -36,6 +41,9 @@ flutter:
 
 flutter_launcher_icons:
   android: "launcher_icon"
+  ios: true
+  remove_alpha_ios: true
+  background_color_ios: "#FFFFFF"
   image_path: "assets/images/utamys_icon_white.png"
   adaptive_icon_background: "#1A1A1A"
   adaptive_icon_foreground: "assets/images/utamys_icon_white.png"

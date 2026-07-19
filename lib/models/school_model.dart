@@ -1,3 +1,4 @@
+import 'package:utammys_mobile_app/utils/logger.dart';
 /// Modelo de datos para colegios/escuelas (Clientes en la API)
 class School {
   final int id;
@@ -47,7 +48,7 @@ class School {
         try {
           return double.parse(value);
         } catch (e) {
-          print('[School.fromJson] Error parsing credit_limit: $value -> $e');
+          logDebug('[School.fromJson] Error parsing credit_limit: $value -> $e');
           return null;
         }
       }

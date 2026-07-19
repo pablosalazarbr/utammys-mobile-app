@@ -1,3 +1,4 @@
+import 'package:utammys_mobile_app/utils/logger.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 class ConnectivityService {
@@ -17,7 +18,7 @@ class ConnectivityService {
       final result = await _connectivity.checkConnectivity();
       return result.isNotEmpty && result.first != ConnectivityResult.none;
     } catch (e) {
-      print('[ConnectivityService] Error checking internet: $e');
+      logDebug('[ConnectivityService] Error checking internet: $e');
       return false;
     }
   }
@@ -32,7 +33,7 @@ class ConnectivityService {
       }
       return ConnectivityResult.none;
     } catch (e) {
-      print('[ConnectivityService] Error getting connection type: $e');
+      logDebug('[ConnectivityService] Error getting connection type: $e');
       return ConnectivityResult.none;
     }
   }

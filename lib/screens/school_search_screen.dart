@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:utammys_mobile_app/models/school_model.dart';
 import 'package:utammys_mobile_app/screens/school_products_screen.dart';
 import 'package:utammys_mobile_app/services/school_service.dart';
-import 'package:utammys_mobile_app/services/cart_service.dart';
-import 'package:utammys_mobile_app/widgets/custom_bottom_nav_bar.dart';
 import 'package:utammys_mobile_app/widgets/ui_components.dart';
+import 'package:utammys_mobile_app/theme/app_theme.dart';
 
 class SchoolSearchScreen extends StatefulWidget {
   const SchoolSearchScreen({super.key});
@@ -19,7 +18,6 @@ class _SchoolSearchScreenState extends State<SchoolSearchScreen> {
   List<School> _allSchools = [];
   List<School> _filteredSchools = [];
   bool _isSearching = false;
-  int _currentNavIndex = 1; // Search tab
 
   @override
   void initState() {
@@ -55,22 +53,6 @@ class _SchoolSearchScreenState extends State<SchoolSearchScreen> {
     });
   }
 
-  void _handleNavigation(int index) {
-    if (index == _currentNavIndex) return;
-    
-    switch (index) {
-      case 0:
-        Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-        break;
-      case 1:
-        // Already on search
-        break;
-      case 2:
-        Navigator.pushNamed(context, '/cart');
-        break;
-    }
-  }
-
   @override
   void dispose() {
     _searchController.dispose();
@@ -81,25 +63,9 @@ class _SchoolSearchScreenState extends State<SchoolSearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        backgroundColor: TammysColors.background,
-        elevation: 1,
-        shadowColor: Colors.black.withOpacity(0.1),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: TammysColors.primary),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Buscar Colegio',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: FutureBuilder<List<School>>(
+      body: SafeArea(
+        bottom: false,
+        child: FutureBuilder<List<School>>(
         future: _schoolsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -122,16 +88,18 @@ class _SchoolSearchScreenState extends State<SchoolSearchScreen> {
               // Search Bar
               Container(
                 padding: const EdgeInsets.all(16),
-                color: TammysColors.background,
+                color: context.tScaffold,
                 child: TextField(
                   controller: _searchController,
+                  style: TextStyle(color: context.tTextPrimary),
                   onChanged: _filterSchools,
                   decoration: InputDecoration(
                     hintText: 'Buscar por nombre o ciudad...',
-                    prefixIcon: const Icon(Icons.search, color: TammysColors.primary),
+                    hintStyle: TextStyle(color: context.tTextSecondary),
+                    prefixIcon: Icon(Icons.search, color: context.tTextSecondary),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear, color: TammysColors.primary),
+                            icon: Icon(Icons.clear, color: context.tTextSecondary),
                             onPressed: () {
                               _searchController.clear();
                               _filterSchools('');
@@ -143,7 +111,7 @@ class _SchoolSearchScreenState extends State<SchoolSearchScreen> {
                       borderSide: BorderSide.none,
                     ),
                     filled: true,
-                    fillColor: Colors.grey[200],
+                    fillColor: context.tCard,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
                 ),
@@ -158,7 +126,7 @@ class _SchoolSearchScreenState extends State<SchoolSearchScreen> {
                             Icon(
                               Icons.school_outlined,
                               size: 64,
-                              color: Colors.grey[300],
+                              color: context.tTextSecondary,
                             ),
                             const SizedBox(height: 16),
                             Text(
@@ -167,7 +135,7 @@ class _SchoolSearchScreenState extends State<SchoolSearchScreen> {
                                   : 'No hay colegios disponibles',
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.grey[600],
+                                color: context.tTextSecondary,
                               ),
                             ),
                           ],
@@ -175,7 +143,7 @@ class _SchoolSearchScreenState extends State<SchoolSearchScreen> {
                       )
                     : ListView.builder(
                         itemCount: _filteredSchools.length,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        padding: const EdgeInsets.fromLTRB(0, 8, 0, 110),
                         itemBuilder: (context, index) {
                           final school = _filteredSchools[index];
                           return SchoolCard(
@@ -196,11 +164,7 @@ class _SchoolSearchScreenState extends State<SchoolSearchScreen> {
             ],
           );
         },
-      ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _currentNavIndex,
-        onTap: _handleNavigation,
-        cartItemCount: CartService().totalQuantity,
+        ),
       ),
     );
   }
@@ -218,103 +182,117 @@ class SchoolCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[200]!),
-          color: Colors.white,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Logo/Image
-            Container(
-              width: double.infinity,
-              height: 200,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                color: Colors.grey[200],
-              ),
-              child: school.logoUrl != null && school.logoUrl!.isNotEmpty
-                  ? Image.network(
-                      school.logoUrl!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return _buildPlaceholder();
-                      },
-                    )
-                  : _buildPlaceholder(),
+    final typeColor = school.type.toUpperCase() == 'ESCOLAR'
+        ? const Color(0xFF2563EB)
+        : const Color(0xFFEA580C);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Material(
+        color: context.tSurface,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: context.tBorder),
             ),
-            // Info
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    school.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+            child: Row(
+              children: [
+                // Logo circular
+                Container(
+                  width: 56,
+                  height: 56,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: context.tCard,
                   ),
-                  const SizedBox(height: 8),
-                  if (school.city != null)
-                    Row(
-                      children: [
-                        Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
-                        const SizedBox(width: 4),
-                        Text(
-                          school.city!,
-                          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  child: school.logoUrl != null && school.logoUrl!.isNotEmpty
+                      ? Image.network(
+                          school.logoUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => _buildPlaceholder(context),
+                        )
+                      : _buildPlaceholder(context),
+                ),
+                const SizedBox(width: 14),
+                // Info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        school.name,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: context.tTextPrimary,
+                          height: 1.2,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (school.city != null && school.city!.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(Icons.location_on_outlined,
+                                size: 13, color: context.tTextSecondary),
+                            const SizedBox(width: 3),
+                            Flexible(
+                              child: Text(
+                                school.city!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 12.5,
+                                    color: context.tTextSecondary),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
-                    ),
-                  if (school.type != null) ...[
-                    const SizedBox(height: 8),
-                    Chip(
-                      label: Text(
-                        school.type,
-                        style: const TextStyle(fontSize: 12, color: Colors.white),
-                      ),
-                      backgroundColor: school.type.toUpperCase() == 'ESCOLAR'
-                          ? Colors.blue
-                          : Colors.orange,
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    ),
-                  ],
-                ],
-              ),
+                      if (school.type.isNotEmpty) ...[
+                        const SizedBox(height: 7),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: typeColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            school.type.toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.4,
+                              color: typeColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Icon(Icons.chevron_right, color: context.tTextSecondary),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildPlaceholder() {
+  Widget _buildPlaceholder(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.school,
-            size: 64,
-            color: Colors.grey[400],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Sin imagen',
-            style: TextStyle(color: Colors.grey[600]),
-          ),
-        ],
-      ),
+      child: Icon(Icons.school_outlined, size: 28, color: context.tTextSecondary),
     );
   }
 }

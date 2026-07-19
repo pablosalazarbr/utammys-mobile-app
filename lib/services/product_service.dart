@@ -1,3 +1,4 @@
+import 'package:utammys_mobile_app/utils/logger.dart';
 import 'package:utammys_mobile_app/models/product_model.dart';
 import 'package:utammys_mobile_app/models/category_model.dart';
 import 'package:utammys_mobile_app/models/school_model.dart';
@@ -7,12 +8,12 @@ class ProductService {
   /// Obtiene todos los productos de un cliente (colegio) específico
   static Future<List<Product>> getClientProducts(int clientId) async {
     try {
-      print('[ProductService] Fetching products for client_id: $clientId');
+      logDebug('[ProductService] Fetching products for client_id: $clientId');
       final response = await ApiService.getList('shop/products?client_id=$clientId');
-      print('[ProductService] Got ${response.length} products for client $clientId');
+      logDebug('[ProductService] Got ${response.length} products for client $clientId');
       
       if (response.isEmpty) {
-        print('[ProductService] No products found for client $clientId');
+        logDebug('[ProductService] No products found for client $clientId');
         return [];
       }
       
@@ -20,7 +21,7 @@ class ProductService {
           .map((item) => Product.fromJson(item as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      print('[ProductService] ERROR fetching client products: $e');
+      logDebug('[ProductService] ERROR fetching client products: $e');
       rethrow; // Re-throw the error to be handled in the UI
     }
   }
@@ -124,19 +125,19 @@ class ProductService {
   /// Obtiene lista de colegios/escuelas desde API
   static Future<List<School>> getSchools() async {
     try {
-      print('[ProductService] Fetching schools from /shop/clients');
+      logDebug('[ProductService] Fetching schools from /shop/clients');
       final response = await ApiService.getList('shop/clients');
-      print('[ProductService] Got ${response.length} schools from API');
+      logDebug('[ProductService] Got ${response.length} schools from API');
       final schools = response
           .map((item) {
-            print('[ProductService] Parsing school: ${item}');
+            logDebug('[ProductService] Parsing school: ${item}');
             return School.fromJson(item as Map<String, dynamic>);
           })
           .toList();
-      print('[ProductService] Successfully parsed ${schools.length} schools');
+      logDebug('[ProductService] Successfully parsed ${schools.length} schools');
       return schools;
     } catch (e) {
-      print('[ProductService] ERROR fetching schools: $e');
+      logDebug('[ProductService] ERROR fetching schools: $e');
       throw Exception('Error fetching schools: $e');
     }
   }

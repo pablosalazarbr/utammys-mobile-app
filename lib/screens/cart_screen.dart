@@ -3,6 +3,8 @@ import 'package:utammys_mobile_app/helpers/image_url_helper.dart';
 import 'package:utammys_mobile_app/models/product_model.dart';
 import 'package:utammys_mobile_app/services/cart_service.dart';
 import 'package:utammys_mobile_app/widgets/ui_components.dart';
+import 'package:utammys_mobile_app/theme/app_theme.dart';
+import 'package:utammys_mobile_app/services/orders_service.dart';
 import 'checkout_screen.dart';
 import 'order_confirmation_screen.dart';
 
@@ -15,20 +17,11 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   late CartService _cartService;
-  late TextEditingController _instructionsController;
-  int _currentNavIndex = 2; // Cart tab
 
   @override
   void initState() {
     super.initState();
     _cartService = CartService();
-    _instructionsController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _instructionsController.dispose();
-    super.dispose();
   }
 
   @override
@@ -38,24 +31,15 @@ class _CartScreenState extends State<CartScreen> {
     final total = subtotal;
 
     return Scaffold(
+      backgroundColor: context.tScaffold,
       appBar: AppBar(
-        backgroundColor: TammysColors.background,
+        backgroundColor: context.tScaffold,
         elevation: 1,
-        shadowColor: Colors.black.withOpacity(0.05),
+        shadowColor: Colors.black.withValues(alpha: 0.05),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: TammysColors.primary, size: 20),
+          icon: Icon(Icons.arrow_back_ios, color: context.tTextPrimary, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Carrito de Compras',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.5,
-          ),
-        ),
-        centerTitle: false,
       ),
       body: cartItems.isEmpty
           ? Center(
@@ -69,7 +53,7 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Tu carrito está vacío',
+                    'Tu bolsa está vacía',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey[600],
@@ -96,10 +80,8 @@ class _CartScreenState extends State<CartScreen> {
                 ],
               ),
             )
-          : Stack(
-              children: [
-                SingleChildScrollView(
-                  padding: const EdgeInsets.only(bottom: 140),
+          : SingleChildScrollView(
+                  padding: const EdgeInsets.only(bottom: 24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -153,10 +135,10 @@ class _CartScreenState extends State<CartScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: context.tSurface,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: TammysColors.divider,
+                              color: context.tDivider,
                               width: 1,
                             ),
                           ),
@@ -171,27 +153,17 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               ),
                               const SizedBox(height: 16),
-                              _buildSummaryRow('Subtotal', 'Q${subtotal.toStringAsFixed(2)}'),
+                              SummaryRow(
+                                label: 'Subtotal',
+                                value: 'Q${subtotal.toStringAsFixed(2)}',
+                              ),
                               const SizedBox(height: 16),
                               Divider(color: TammysColors.divider, thickness: 1),
                               const SizedBox(height: 12),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Total',
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Q${total.toStringAsFixed(2)}',
-                                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                      fontWeight: FontWeight.w700,
-                                      color: TammysColors.primary,
-                                    ),
-                                  ),
-                                ],
+                              SummaryRow(
+                                label: 'Total',
+                                value: 'Q${total.toStringAsFixed(2)}',
+                                emphasized: true,
                               ),
                             ],
                           ),
@@ -202,124 +174,82 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                 ),
                 
-                // Fixed Bottom Checkout Button
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border(
-                        top: BorderSide(color: Colors.grey[200]!),
-                      ),
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_cartService.cartItems.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('El carrito está vacío'),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                                return;
-                              }
-
-                              // Convertir items del carrito al formato esperado por CheckoutScreen
-                              // Navegar a checkout
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => CheckoutScreen(
-                                    cartItems: _cartService.cartItems,
-                                    cartTotal: subtotal,
-                                  ),
-                                ),
-                              ).then((orderData) {
-                                if (orderData != null &&
-                                    orderData is Map<String, dynamic>) {
-                                  // Mostrar pantalla de confirmación
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          OrderConfirmationScreen(
-                                        orderData: orderData,
-                                        buyerName: 'Cliente',
-                                      ),
-                                    ),
-                                  );
-                                }
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: TammysColors.primary,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 2,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text(
-                                  'Proceder a Pago',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+      bottomNavigationBar: cartItems.isEmpty
+          ? null
+          : _buildCheckoutBar(context, subtotal),
     );
   }
 
-  Widget _buildSummaryRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.grey[600],
-            fontSize: 14,
+  Widget _buildCheckoutBar(BuildContext context, double subtotal) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.tSurface,
+        border: Border(
+          top: BorderSide(color: context.tDivider),
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: TammysPrimaryButton(
+            label: 'Proceder a Pago',
+            icon: Icons.arrow_forward,
+            onPressed: () {
+              if (_cartService.cartItems.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Tu bolsa está vacía'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+
+              // Navegar a checkout
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  settings: const RouteSettings(name: 'checkout'),
+                  builder: (context) => CheckoutScreen(
+                    cartItems: _cartService.cartItems,
+                    cartTotal: subtotal,
+                  ),
+                ),
+              ).then((orderData) {
+                if (orderData != null && orderData is Map<String, dynamic>) {
+                  // Vaciar el carrito tras la compra exitosa
+                  setState(() {
+                    _cartService.clearCart();
+                  });
+                  // Guardar el pedido en "Mis Pedidos" para seguimiento
+                  OrdersService.saveFromCheckout(orderData);
+                  // Mostrar pantalla de confirmación
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      settings:
+                          const RouteSettings(name: 'order-confirmation'),
+                      builder: (context) => OrderConfirmationScreen(
+                        orderData: orderData,
+                        buyerName:
+                            orderData['buyer_name'] as String? ?? 'Cliente',
+                      ),
+                    ),
+                  );
+                }
+              });
+            },
           ),
         ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-          ),
-        ),
-      ],
+      ),
     );
   }
 
   double _calculateSubtotal(List<CartItem> cartItems) {
     return cartItems.fold(
       0.0,
-      (total, item) => total + ((item.product.price ?? item.size?.price ?? 0.0) * item.quantity),
+      (total, item) => total + item.getTotalPrice(),
     );
   }
 }
@@ -342,8 +272,8 @@ class CartItemWidget extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey[200]!),
+        color: context.tSurface,
+        border: Border.all(color: context.tBorder),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -383,9 +313,10 @@ class CartItemWidget extends StatelessWidget {
               children: [
                 Text(
                   item.product.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
+                    color: context.tTextPrimary,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -427,10 +358,10 @@ class CartItemWidget extends StatelessWidget {
                   ),
                 Text(
                   'Q${(item.size?.price ?? item.product.getMinPrice() ?? 0.0).toStringAsFixed(2)}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: TammysColors.primary,
+                    color: context.tTextPrimary,
                   ),
                 ),
               ],

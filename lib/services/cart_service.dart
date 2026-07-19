@@ -1,3 +1,4 @@
+import 'package:utammys_mobile_app/utils/logger.dart';
 import 'package:utammys_mobile_app/models/product_model.dart';
 
 /// Servicio para gestionar el carrito de compras
@@ -21,10 +22,10 @@ class CartService {
   /// Obtener el total de items (contando cantidades)
   int get totalQuantity => _cartItems.fold(0, (sum, item) => sum + item.quantity);
 
-  /// Calcular subtotal
+  /// Calcular subtotal (incluye el costo de personalización de cada item)
   double get subtotal => _cartItems.fold(
     0.0,
-    (total, item) => total + (item.product.price ?? item.size?.price ?? 0.0) * item.quantity,
+    (total, item) => total + item.getTotalPrice(),
   );
 
   /// Agregar un item al carrito
@@ -48,21 +49,21 @@ class CartService {
           customizationText: _cartItems[existingIndex].customizationText,
           customizationCost: _cartItems[existingIndex].customizationCost,
         );
-        print('[CartService] Incrementada cantidad del producto: ${item.product.name}');
+        logDebug('[CartService] Incrementada cantidad del producto: ${item.product.name}');
       } else {
         // Nuevo producto
         _cartItems.add(item);
-        print('[CartService] Producto agregado al carrito: ${item.product.name}');
+        logDebug('[CartService] Producto agregado al carrito: ${item.product.name}');
       }
     } catch (e) {
-      print('[CartService] Error al agregar item: $e');
+      logDebug('[CartService] Error al agregar item: $e');
     }
   }
 
   /// Remover un item del carrito por índice
   void removeItem(int index) {
     if (index >= 0 && index < _cartItems.length) {
-      print('[CartService] Producto removido: ${_cartItems[index].product.name}');
+      logDebug('[CartService] Producto removido: ${_cartItems[index].product.name}');
       _cartItems.removeAt(index);
     }
   }
@@ -81,7 +82,7 @@ class CartService {
           customizationText: item.customizationText,
           customizationCost: item.customizationCost,
         );
-        print('[CartService] Cantidad actualizada: ${item.product.name} -> $quantity');
+        logDebug('[CartService] Cantidad actualizada: ${item.product.name} -> $quantity');
       }
     }
   }
@@ -89,7 +90,7 @@ class CartService {
   /// Vaciar el carrito
   void clearCart() {
     _cartItems.clear();
-    print('[CartService] Carrito vaciado');
+    logDebug('[CartService] Carrito vaciado');
   }
 
   /// Obtener un item por índice

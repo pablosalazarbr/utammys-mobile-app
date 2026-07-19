@@ -1,3 +1,6 @@
+import 'package:utammys_mobile_app/utils/logger.dart';
+import 'package:utammys_mobile_app/helpers/image_url_helper.dart';
+
 /// Modelo de datos para productos
 class Product {
   final int id;
@@ -55,7 +58,7 @@ class Product {
         try {
           return double.parse(value);
         } catch (e) {
-          print('[Product.fromJson] Error parsing price: $value -> $e');
+          logDebug('[Product.fromJson] Error parsing price: $value -> $e');
           return null;
         }
       }
@@ -66,7 +69,7 @@ class Product {
     List<String>? parseMedia(dynamic value) {
       if (value == null) return null;
       
-      print('[Product.fromJson] Raw media: $value (type: ${value.runtimeType})');
+      logDebug('[Product.fromJson] Raw media: $value (type: ${value.runtimeType})');
       
       List<String> mediaUrls = [];
       
@@ -87,17 +90,17 @@ class Product {
             }
           }
         } catch (e) {
-          print('[Product.fromJson] Error parsing media list: $e');
+          logDebug('[Product.fromJson] Error parsing media list: $e');
           return null;
         }
       }
       
-      print('[Product.fromJson] Parsed media URLs: $mediaUrls');
+      logDebug('[Product.fromJson] Parsed media URLs: $mediaUrls');
       return mediaUrls.isNotEmpty ? mediaUrls : null;
     }
 
-    print('[Product.fromJson] Parsing product: id=${json['id']}, name=${json['name']}, full json keys=${json.keys.toList()}');
-    print('[Product.fromJson] Media value: ${json['media']} (type: ${json['media'].runtimeType})');
+    logDebug('[Product.fromJson] Parsing product: id=${json['id']}, name=${json['name']}, full json keys=${json.keys.toList()}');
+    logDebug('[Product.fromJson] Media value: ${json['media']} (type: ${json['media'].runtimeType})');
 
     return Product(
       id: json['id'] as int,
@@ -143,17 +146,10 @@ class Product {
     };
   }
 
-  /// Obtiene la primera imagen del producto con URL completa
+  /// Obtiene la primera imagen del producto con URL completa (producción, desde .env)
   String? getFirstImage() {
     if (media != null && media!.isNotEmpty) {
-      final imagePath = media!.first;
-      // Si ya es una URL completa, retornar como está
-      if (imagePath.startsWith('http')) {
-        return imagePath;
-      }
-      // Si es una ruta relativa, construir URL completa
-      // Importar ApiService dinámicamente para evitar dependencias circulares
-      return 'http://10.0.2.2:8000$imagePath';
+      return ImageUrlHelper.buildImageUrl(media!.first);
     }
     return null;
   }
@@ -204,14 +200,14 @@ class ProductSize {
         try {
           return double.parse(value);
         } catch (e) {
-          print('[ProductSize.fromJson] Error parsing price: $value -> $e');
+          logDebug('[ProductSize.fromJson] Error parsing price: $value -> $e');
           return 0.0;
         }
       }
       return 0.0;
     }
 
-    print('[ProductSize.fromJson] Parsing: $json');
+    logDebug('[ProductSize.fromJson] Parsing: $json');
 
     return ProductSize(
       id: json['id'] as int,
@@ -266,7 +262,7 @@ class ProductOption {
         try {
           return double.parse(value);
         } catch (e) {
-          print('[ProductOption.fromJson] Error parsing price: $value -> $e');
+          logDebug('[ProductOption.fromJson] Error parsing price: $value -> $e');
           return 0.0;
         }
       }

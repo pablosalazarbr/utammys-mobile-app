@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:utammys_mobile_app/widgets/ui_components.dart';
+import 'package:utammys_mobile_app/theme/app_theme.dart';
 
-class OrderConfirmationScreen extends StatelessWidget {
+class OrderConfirmationScreen extends StatefulWidget {
   final Map<String, dynamic> orderData;
   final String buyerName;
 
@@ -12,22 +12,29 @@ class OrderConfirmationScreen extends StatelessWidget {
   });
 
   @override
+  State<OrderConfirmationScreen> createState() =>
+      _OrderConfirmationScreenState();
+}
+
+class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
+  @override
   Widget build(BuildContext context) {
+    final orderData = widget.orderData;
     final orderId = orderData['order_id'] ?? 'N/A';
     final total = orderData['total'] ?? 0.0;
     final shippingMethod =
         orderData['shipping_method'] ?? 'pickup';
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.tScaffold,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.tScaffold,
         elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text(
+        title: Text(
           'Confirmación de Orden',
           style: TextStyle(
-            color: Colors.black87,
+            color: context.tTextPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -57,13 +64,13 @@ class OrderConfirmationScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               // Success Message
-              const Text(
+              Text(
                 '¡Gracias por tu Compra!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: context.tTextPrimary,
                 ),
               ),
 
@@ -74,7 +81,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[600],
+                  color: context.tTextSecondary,
                 ),
               ),
 
@@ -84,7 +91,7 @@ class OrderConfirmationScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[200]!),
+                  border: Border.all(color: context.tBorder),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -98,15 +105,15 @@ class OrderConfirmationScreen extends StatelessWidget {
                           'Número de Orden',
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.grey[600],
+                            color: context.tTextSecondary,
                           ),
                         ),
                         Text(
                           orderId.toString(),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black87,
+                            color: context.tTextPrimary,
                           ),
                         ),
                       ],
@@ -124,15 +131,15 @@ class OrderConfirmationScreen extends StatelessWidget {
                           'Cliente',
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.grey[600],
+                            color: context.tTextSecondary,
                           ),
                         ),
                         Text(
-                          buyerName,
-                          style: const TextStyle(
+                          widget.buyerName,
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black87,
+                            color: context.tTextPrimary,
                           ),
                         ),
                       ],
@@ -150,17 +157,17 @@ class OrderConfirmationScreen extends StatelessWidget {
                           'Envío',
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.grey[600],
+                            color: context.tTextSecondary,
                           ),
                         ),
                         Text(
                           shippingMethod == 'delivery'
                               ? 'Entrega a Domicilio'
                               : 'Recoger en Tienda',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black87,
+                            color: context.tTextPrimary,
                           ),
                         ),
                       ],
@@ -174,20 +181,20 @@ class OrderConfirmationScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Total',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black87,
+                            color: context.tTextPrimary,
                           ),
                         ),
                         Text(
                           'Q${(total is double ? total : double.parse(total.toString())).toStringAsFixed(2)}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: TammysColors.primary,
+                            color: context.tTextPrimary,
                           ),
                         ),
                       ],
@@ -252,7 +259,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                 height: 54,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: TammysColors.primary,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -262,10 +269,10 @@ class OrderConfirmationScreen extends StatelessWidget {
                     Navigator.of(context)
                         .popUntil((route) => route.isFirst);
                   },
-                  child: const Text(
+                  child: Text(
                     'Volver al Inicio',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -283,7 +290,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    side: const BorderSide(color: TammysColors.primary),
+                    side: BorderSide(color: context.tBrand),
                   ),
                   onPressed: () {
                     // Compartir número de orden
@@ -307,10 +314,10 @@ class OrderConfirmationScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  child: const Text(
+                  child: Text(
                     'Ver Número de Orden',
                     style: TextStyle(
-                      color: TammysColors.primary,
+                      color: context.tBrand,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),

@@ -252,8 +252,10 @@ class LoadingWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(TammysColors.primary),
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Theme.of(context).colorScheme.primary,
+            ),
           ),
           if (message != null) ...[
             const SizedBox(height: TammysDimensions.paddingMedium),
@@ -362,6 +364,284 @@ class ErrorLoadingWidget extends StatelessWidget {
             child: const Text('Reintentar'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Campo de texto estándar de la app (mismo estilo en todos los formularios)
+class TammysTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final String hint;
+  final TextInputType? keyboardType;
+  final int? minLines;
+  final int maxLines;
+
+  const TammysTextField({
+    super.key,
+    required this.controller,
+    required this.hint,
+    this.keyboardType,
+    this.minLines,
+    this.maxLines = 1,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    OutlineInputBorder borderWith(Color color, [double width = 1]) =>
+        OutlineInputBorder(
+          borderRadius:
+              BorderRadius.circular(TammysDimensions.borderRadiusSmall),
+          borderSide: BorderSide(color: color, width: width),
+        );
+
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      minLines: minLines,
+      maxLines: maxLines,
+      style: TextStyle(color: scheme.onSurface),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(color: scheme.onSurface.withValues(alpha: 0.5)),
+        border: borderWith(scheme.outline),
+        enabledBorder: borderWith(scheme.outline),
+        focusedBorder: borderWith(scheme.primary, 1.5),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      ),
+    );
+  }
+}
+
+/// Botón primario full-width (negro de marca)
+class TammysPrimaryButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+  final IconData? icon;
+
+  const TammysPrimaryButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return SizedBox(
+      width: double.infinity,
+      height: 54,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: scheme.primary,
+          foregroundColor: scheme.onPrimary,
+          disabledBackgroundColor: TammysColors.mediumGrey,
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        onPressed: onPressed,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                color: scheme.onPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            if (icon != null) ...[
+              const SizedBox(width: 8),
+              Icon(icon, color: scheme.onPrimary, size: 20),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Botón secundario full-width (contorno de marca)
+class TammysSecondaryButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+
+  const TammysSecondaryButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return SizedBox(
+      width: double.infinity,
+      height: 54,
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          side: BorderSide(color: scheme.primary),
+        ),
+        onPressed: onPressed,
+        child: Text(
+          label,
+          style: TextStyle(
+            color: scheme.primary,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Fila de resumen (etiqueta a la izquierda, valor a la derecha).
+/// [emphasized] la resalta como fila de total.
+class SummaryRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool emphasized;
+
+  const SummaryRow({
+    super.key,
+    required this.label,
+    required this.value,
+    this.emphasized = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: emphasized ? 16 : 13,
+            fontWeight: emphasized ? FontWeight.bold : FontWeight.w400,
+            color: emphasized
+                ? scheme.onSurface
+                : scheme.onSurface.withValues(alpha: 0.6),
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: emphasized ? 16 : 13,
+            fontWeight: emphasized ? FontWeight.bold : FontWeight.w600,
+            color: emphasized ? scheme.primary : scheme.onSurface,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Tarjeta seleccionable para métodos de envío (radio custom de marca)
+class ShippingOptionTile extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String trailingLabel;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const ShippingOptionTile({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.trailingLabel,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: selected ? scheme.primary : scheme.outline,
+            width: selected ? 2 : 1,
+          ),
+          borderRadius:
+              BorderRadius.circular(TammysDimensions.borderRadiusSmall),
+          color: selected
+              ? scheme.primary.withValues(alpha: 0.06)
+              : scheme.surface,
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: selected ? scheme.primary : TammysColors.mediumGrey,
+                  width: 2,
+                ),
+              ),
+              child: selected
+                  ? Center(
+                      child: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: scheme.primary,
+                        ),
+                      ),
+                    )
+                  : null,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: scheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              trailingLabel,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: scheme.primary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

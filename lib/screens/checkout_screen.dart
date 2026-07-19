@@ -1,9 +1,12 @@
+import 'package:utammys_mobile_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:utammys_mobile_app/services/connectivity_service.dart';
 import 'package:utammys_mobile_app/services/checkout_service.dart';
 import 'package:utammys_mobile_app/models/product_model.dart';
 import 'package:utammys_mobile_app/widgets/ui_components.dart';
+import 'package:utammys_mobile_app/theme/app_theme.dart';
 import 'checkout_webview_screen.dart';
+import 'privacy_policy_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final List<CartItem> cartItems;
@@ -22,6 +25,9 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
+  // Costo fijo de envío a domicilio (Q). TODO: obtener del backend.
+  static const double _kDeliveryFee = 45.0;
+
   // Servicios
   final ConnectivityService _connectivityService = ConnectivityService();
   final CheckoutService _checkoutService = CheckoutService();
@@ -160,7 +166,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         _isProcessing = false;
       });
 
-      print('[CheckoutScreen] ✅ Sesión creada: ${sessionData.sessionId}');
+      logDebug('[CheckoutScreen] ✅ Sesión creada: ${sessionData.sessionId}');
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
@@ -184,6 +190,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   /// Construir Step 1: Información de envío
   Widget _buildStep1() {
+    final sectionLabelStyle = TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+      color: context.tTextPrimary,
+    );
+    final total = _shippingMethod == 'delivery'
+        ? widget.cartTotal + _kDeliveryFee
+        : widget.cartTotal;
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -191,379 +206,77 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            const Text(
+            Text(
               'Información de Envío',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: context.tTextPrimary,
               ),
             ),
             const SizedBox(height: 24),
 
             // Información Personal
-            const Text(
-              'Información Personal',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
+            Text('Información Personal', style: sectionLabelStyle),
             const SizedBox(height: 12),
-
-            // Nombre Completo
-            TextField(
+            TammysTextField(
               controller: _fullNameController,
-              decoration: InputDecoration(
-                hintText: 'Nombre Completo',
-                hintStyle: TextStyle(color: Colors.grey[400]),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-              ),
+              hint: 'Nombre Completo',
             ),
             const SizedBox(height: 12),
-
-            // Email
-            TextField(
+            TammysTextField(
               controller: _emailController,
+              hint: 'Email',
               keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                hintText: 'Email',
-                hintStyle: TextStyle(color: Colors.grey[400]),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-              ),
             ),
             const SizedBox(height: 12),
-
-            // Teléfono
-            TextField(
+            TammysTextField(
               controller: _phoneController,
+              hint: 'Teléfono',
               keyboardType: TextInputType.phone,
-              decoration: InputDecoration(
-                hintText: 'Teléfono',
-                hintStyle: TextStyle(color: Colors.grey[400]),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-              ),
             ),
 
             const SizedBox(height: 24),
 
-            // Método de Envío
-            const Text(
-              'Método de Envío',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
+            // Método de Envío (selector único)
+            Text('Método de Envío', style: sectionLabelStyle),
+            const SizedBox(height: 12),
+            ShippingOptionTile(
+              title: 'Retiro en Tienda',
+              subtitle: 'Recoge en nuestras instalaciones',
+              trailingLabel: 'GRATIS',
+              selected: _shippingMethod == 'pickup',
+              onTap: () => setState(() => _shippingMethod = 'pickup'),
             ),
             const SizedBox(height: 12),
-
-            // Radio buttons para método de envío
-            RadioListTile<String>(
-              title: const Text('Recoger en tienda'),
-              subtitle: const Text('Gratis'),
-              value: 'pickup',
-              groupValue: _shippingMethod,
-              onChanged: (value) {
-                setState(() => _shippingMethod = value ?? 'pickup');
-              },
-              contentPadding: EdgeInsets.zero,
-              activeColor: TammysColors.primary,
-            ),
-            const SizedBox(height: 8),
-            RadioListTile<String>(
-              title: const Text('Entrega a domicilio'),
-              subtitle: const Text('Q45.00'),
-              value: 'delivery',
-              groupValue: _shippingMethod,
-              onChanged: (value) {
-                setState(() => _shippingMethod = value ?? 'delivery');
-              },
-              contentPadding: EdgeInsets.zero,
-              activeColor: TammysColors.primary,
+            ShippingOptionTile(
+              title: 'Entrega a Domicilio',
+              subtitle: 'Te lo llevamos a tu dirección',
+              trailingLabel: 'Q${_kDeliveryFee.toStringAsFixed(2)}',
+              selected: _shippingMethod == 'delivery',
+              onTap: () => setState(() => _shippingMethod = 'delivery'),
             ),
 
             // Campos condicionales para delivery
             if (_shippingMethod == 'delivery') ...[
               const SizedBox(height: 20),
-              const Text(
-                'Dirección de Entrega',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
+              Text('Dirección de Entrega', style: sectionLabelStyle),
               const SizedBox(height: 12),
-
-              // Dirección
-              TextField(
+              TammysTextField(
                 controller: _addressController,
+                hint: 'Dirección completa',
                 minLines: 2,
                 maxLines: 3,
-                decoration: InputDecoration(
-                  hintText: 'Dirección completa',
-                  hintStyle: TextStyle(color: Colors.grey[400]),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                ),
               ),
               const SizedBox(height: 12),
-
-              // Ciudad
-              TextField(
+              TammysTextField(
                 controller: _cityController,
-                decoration: InputDecoration(
-                  hintText: 'Ciudad',
-                  hintStyle: TextStyle(color: Colors.grey[400]),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                ),
+                hint: 'Ciudad',
               ),
               const SizedBox(height: 12),
-
-              // Barrio/Zona (opcional)
-              TextField(
+              TammysTextField(
                 controller: _neighborhoodController,
-                decoration: InputDecoration(
-                  hintText: 'Barrio/Zona (opcional)',
-                  hintStyle: TextStyle(color: Colors.grey[400]),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              // Método de Entrega
-              const Text(
-                'Método de Entrega',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Opción Retiro en Tienda
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _shippingMethod = 'pickup';
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: _shippingMethod == 'pickup' ? const Color(0xFF8B4513) : Colors.grey[300]!,
-                      width: _shippingMethod == 'pickup' ? 2 : 1,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                    color: _shippingMethod == 'pickup' ? const Color(0xFF8B4513).withOpacity(0.05) : Colors.white,
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 20,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: _shippingMethod == 'pickup' ? const Color(0xFF8B4513) : Colors.grey[400]!,
-                            width: 2,
-                          ),
-                        ),
-                        child: _shippingMethod == 'pickup'
-                            ? Center(
-                                child: Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Color(0xFF8B4513),
-                                  ),
-                                ),
-                              )
-                            : null,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Retiro en Tienda',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Recoge en nuestras instalaciones',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Text(
-                        'GRATIS',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF8B4513),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Opción Entrega a Domicilio
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _shippingMethod = 'delivery';
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: _shippingMethod == 'delivery' ? const Color(0xFF8B4513) : Colors.grey[300]!,
-                      width: _shippingMethod == 'delivery' ? 2 : 1,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                    color: _shippingMethod == 'delivery' ? const Color(0xFF8B4513).withOpacity(0.05) : Colors.white,
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 20,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: _shippingMethod == 'delivery' ? const Color(0xFF8B4513) : Colors.grey[400]!,
-                            width: 2,
-                          ),
-                        ),
-                        child: _shippingMethod == 'delivery'
-                            ? Center(
-                                child: Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Color(0xFF8B4513),
-                                  ),
-                                ),
-                              )
-                            : null,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Entrega a Domicilio',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Te lo llevamos a tu dirección',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Text(
-                        'Q45.00',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF8B4513),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                hint: 'Barrio/Zona (opcional)',
               ),
             ],
 
@@ -573,87 +286,32 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: context.tCard,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Resumen de Compra',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
+                  Text('Resumen de Compra', style: sectionLabelStyle),
                   const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Subtotal (${widget.cartItems.length} items)',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      Text(
-                        'Q${widget.cartTotal.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
+                  SummaryRow(
+                    label: 'Subtotal (${widget.cartItems.length} items)',
+                    value: 'Q${widget.cartTotal.toStringAsFixed(2)}',
                   ),
                   if (_shippingMethod == 'delivery') ...[
                     const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Envío',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        const Text(
-                          'Q45.00',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ],
+                    SummaryRow(
+                      label: 'Envío',
+                      value: 'Q${_kDeliveryFee.toStringAsFixed(2)}',
                     ),
                   ],
                   const SizedBox(height: 8),
                   const Divider(),
                   const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Total',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      Text(
-                        'Q${(_shippingMethod == 'delivery' ? widget.cartTotal + 45.0 : widget.cartTotal).toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: TammysColors.primary,
-                        ),
-                      ),
-                    ],
+                  SummaryRow(
+                    label: 'Total',
+                    value: 'Q${total.toStringAsFixed(2)}',
+                    emphasized: true,
                   ),
                 ],
               ),
@@ -662,47 +320,50 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             const SizedBox(height: 24),
 
             // Botones
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: TammysColors.primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                onPressed: _goToNextStep,
-                child: const Text(
-                  'Continuar al Pago',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+            TammysPrimaryButton(
+              label: 'Continuar al Pago',
+              onPressed: _goToNextStep,
             ),
             const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  side: const BorderSide(color: TammysColors.primary),
-                ),
-                onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  'Volver al Carrito',
+            TammysSecondaryButton(
+              label: 'Volver a la Bolsa',
+              onPressed: () => Navigator.pop(context),
+            ),
+            const SizedBox(height: 16),
+            // Aviso de privacidad + enlace a la política
+            Center(
+              child: Text.rich(
+                TextSpan(
+                  text: 'Al continuar aceptas nuestra ',
                   style: TextStyle(
-                    color: TammysColors.primary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                    color: context.tTextSecondary,
                   ),
+                  children: [
+                    WidgetSpan(
+                      alignment: PlaceholderAlignment.middle,
+                      child: GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            settings: const RouteSettings(name: 'privacy'),
+                            builder: (context) => const PrivacyPolicyScreen(),
+                          ),
+                        ),
+                        child: Text(
+                          'Política de Privacidad',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: context.tTextPrimary,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
           ],
@@ -808,8 +469,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       buyerEmail: _emailController.text,
       buyerName: _fullNameController.text,
       onPaymentSuccess: (orderData) {
-        // Navegar a pantalla de confirmación
-        Navigator.pop(context, orderData);
+        // Adjuntar el nombre real del comprador y navegar a confirmación
+        Navigator.pop(context, {
+          ...orderData,
+          'buyer_name': _fullNameController.text,
+        });
       },
       onPaymentCancel: () {
         _showError('Pago cancelado');
@@ -825,18 +489,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.tScaffold,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.tScaffold,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: context.tTextPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'Checkout - Paso $_currentStep',
-          style: const TextStyle(
-            color: Colors.black87,
+          style: TextStyle(
+            color: context.tTextPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),

@@ -1,8 +1,9 @@
+import 'package:utammys_mobile_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:utammys_mobile_app/helpers/image_url_helper.dart';
 import 'package:utammys_mobile_app/models/product_model.dart';
 import 'package:utammys_mobile_app/services/cart_service.dart';
-import 'package:utammys_mobile_app/widgets/ui_components.dart';
+import 'package:utammys_mobile_app/theme/app_theme.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -81,6 +82,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return _baseCustomizationCost + (additionalWords * _additionalWordCost);
   }
 
+  /// Costo únicamente de las palabras adicionales (nunca negativo).
+  /// Sin texto o con ≤2 palabras el excedente es 0.
+  double _getAdditionalWordsCost() {
+    final cost = _getCustomizationCost();
+    return cost > _baseCustomizationCost ? cost - _baseCustomizationCost : 0.0;
+  }
+
   double getTotalPrice() {
     final basePrice = _selectedSize?.price ?? widget.product.price ?? widget.product.getMinPrice() ?? 0.0;
     return ((basePrice + _additionalPrice) * _quantity);
@@ -88,7 +96,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   String _getImageUrl(String? mediaPath) {
     final url = ImageUrlHelper.buildImageUrl(mediaPath, useEmulator: false);
-    print('[ProductDetailScreen] Building image URL for: $mediaPath => Final URL: $url');
+    logDebug('[ProductDetailScreen] Building image URL for: $mediaPath => Final URL: $url');
     return url;
   }
 
@@ -98,20 +106,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       if (_currentImageIndex < widget.product.media!.length) {
         final mediaPath = widget.product.media![_currentImageIndex];
         final imageUrl = _getImageUrl(mediaPath);
-        print('[ProductDetailScreen] ============================================');
-        print('[ProductDetailScreen] CARGANDO IMAGEN DEL PRODUCTO');
-        print('[ProductDetailScreen] Producto: ${widget.product.name} (ID: ${widget.product.id})');
-        print('[ProductDetailScreen] Índice de imagen: $_currentImageIndex');
-        print('[ProductDetailScreen] Media path: $mediaPath');
-        print('[ProductDetailScreen] URL final: $imageUrl');
-        print('[ProductDetailScreen] ============================================');
+        logDebug('[ProductDetailScreen] ============================================');
+        logDebug('[ProductDetailScreen] CARGANDO IMAGEN DEL PRODUCTO');
+        logDebug('[ProductDetailScreen] Producto: ${widget.product.name} (ID: ${widget.product.id})');
+        logDebug('[ProductDetailScreen] Índice de imagen: $_currentImageIndex');
+        logDebug('[ProductDetailScreen] Media path: $mediaPath');
+        logDebug('[ProductDetailScreen] URL final: $imageUrl');
+        logDebug('[ProductDetailScreen] ============================================');
         
         return Image.network(
           imageUrl,
           fit: BoxFit.cover,
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
-            print('[ProductDetailScreen] Cargando: ${loadingProgress.cumulativeBytesLoaded}/${loadingProgress.expectedTotalBytes}');
+            logDebug('[ProductDetailScreen] Cargando: ${loadingProgress.cumulativeBytesLoaded}/${loadingProgress.expectedTotalBytes}');
             return Center(
               child: CircularProgressIndicator(
                 value: loadingProgress.expectedTotalBytes != null
@@ -121,10 +129,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             );
           },
           errorBuilder: (context, error, stackTrace) {
-            print('[ProductDetailScreen] ❌ ERROR CARGANDO IMAGEN');
-            print('[ProductDetailScreen] Error tipo: ${error.runtimeType}');
-            print('[ProductDetailScreen] Error mensaje: $error');
-            print('[ProductDetailScreen] Stack trace: $stackTrace');
+            logDebug('[ProductDetailScreen] ❌ ERROR CARGANDO IMAGEN');
+            logDebug('[ProductDetailScreen] Error tipo: ${error.runtimeType}');
+            logDebug('[ProductDetailScreen] Error mensaje: $error');
+            logDebug('[ProductDetailScreen] Stack trace: $stackTrace');
             return Icon(
               Icons.image_not_supported,
               size: 64,
@@ -160,19 +168,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.tScaffold,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.tScaffold,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: context.tTextPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
             icon: Icon(
               _isFavorite ? Icons.favorite : Icons.favorite_outline,
-              color: _isFavorite ? TammysColors.primary : Colors.black,
+              color: _isFavorite ? context.tBrand : context.tTextPrimary,
             ),
             onPressed: () {
               setState(() {
@@ -181,7 +189,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.more_vert, color: Colors.black),
+            icon: Icon(Icons.more_vert, color: context.tTextPrimary),
             onPressed: () {},
           ),
         ],
@@ -194,7 +202,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             Container(
               width: double.infinity,
               height: 400,
-              color: Colors.grey[100],
+              color: context.tCard,
               child: Stack(
                 children: [
                   Center(
@@ -211,7 +219,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           setState(() {
                             if (_currentImageIndex > 0) {
                               _currentImageIndex--;
-                              print('[ProductDetailScreen] ◀️  Imagen anterior: $_currentImageIndex');
+                              logDebug('[ProductDetailScreen] ◀️  Imagen anterior: $_currentImageIndex');
                             }
                           });
                         },
@@ -237,7 +245,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             if (widget.product.media != null &&
                                 _currentImageIndex < widget.product.media!.length - 1) {
                               _currentImageIndex++;
-                              print('[ProductDetailScreen] ▶️  Imagen siguiente: $_currentImageIndex');
+                              logDebug('[ProductDetailScreen] ▶️  Imagen siguiente: $_currentImageIndex');
                             }
                           });
                         },
@@ -265,7 +273,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     '${_currentImageIndex + 1} de ${widget.product.media!.length}',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey[600],
+                      color: context.tTextSecondary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -288,10 +296,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           children: [
                             Text(
                               widget.product.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black87,
+                                color: context.tTextPrimary,
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -307,7 +315,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   '5.0 (${widget.product.stockQuantity ?? widget.product.sizes?.length ?? 0} opciones)',
                                   style: TextStyle(
                                     fontSize: 13,
-                                    color: Colors.grey[600],
+                                    color: context.tTextSecondary,
                                   ),
                                 ),
                               ],
@@ -329,17 +337,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           'SKU: ${_selectedSize!.sku}',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey[600],
+                            color: context.tTextSecondary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Q${(_selectedSize!.price ?? 0.0).toStringAsFixed(2)}',
-                          style: const TextStyle(
+                          'Q${_selectedSize!.price.toStringAsFixed(2)}',
+                          style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: TammysColors.primary,
+                            color: context.tTextPrimary,
                           ),
                         ),
                       ],
@@ -347,10 +355,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   else
                     Text(
                       'Q${(widget.product.price ?? widget.product.getMinPrice() ?? 0.0).toStringAsFixed(2)}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: TammysColors.primary,
+                        color: context.tTextPrimary,
                       ),
                     ),
 
@@ -362,7 +370,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       widget.product.description ?? '',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey[700],
+                        color: context.tTextSecondary,
                         height: 1.6,
                       ),
                     ),
@@ -374,12 +382,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Detalles',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black87,
+                            color: context.tTextPrimary,
                             letterSpacing: 1.2,
                           ),
                         ),
@@ -388,7 +396,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           widget.product.longDescription ?? '',
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.grey[700],
+                            color: context.tTextSecondary,
                             height: 1.6,
                           ),
                         ),
@@ -420,13 +428,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                   // Material
                   if (widget.product.material != null)
-                    _buildInfoSection('Material', widget.product.material),
+                    _buildInfoSection(context, 'Material', widget.product.material),
 
                   const SizedBox(height: 16),
 
                   // Cuidados
                   if (widget.product.careInstructions != null)
-                    _buildInfoSection('Cuidados', widget.product.careInstructions),
+                    _buildInfoSection(context, 'Cuidados', widget.product.careInstructions),
 
                   const SizedBox(height: 24),
 
@@ -435,12 +443,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Selecciona una Talla',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black87,
+                            color: context.tTextPrimary,
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -463,11 +471,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 ),
                                 decoration: BoxDecoration(
                                   border: Border.all(
-                                    color: isSelected ? TammysColors.primary : Colors.grey[300]!,
+                                    color: isSelected ? context.tBrand : context.tBorder,
                                     width: isSelected ? 2 : 1,
                                   ),
                                   borderRadius: BorderRadius.circular(8),
-                                  color: isSelected ? TammysColors.primary.withOpacity(0.1) : Colors.white,
+                                  color: isSelected ? context.tBrand.withOpacity(0.1) : context.tSurface,
                                 ),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
@@ -477,7 +485,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
-                                        color: isSelected ? Colors.black : Colors.black87,
+                                        color: context.tTextPrimary,
                                       ),
                                     ),
                                   ],
@@ -497,7 +505,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: context.tSurface,
                             border: Border.all(color: Colors.blue[200]!),
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -552,32 +560,32 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 },
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.black87,
+                                  color: context.tTextPrimary,
                                 ),
                                 decoration: InputDecoration(
                                   hintText: 'Ej: Juan Salazar',
-                                  hintStyle: TextStyle(color: Colors.grey[400]),
+                                  hintStyle: TextStyle(color: context.tTextSecondary),
                                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(6),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
+                                    borderSide: BorderSide(color: context.tBorder),
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(6),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
+                                    borderSide: BorderSide(color: context.tBorder),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(6),
-                                    borderSide: const BorderSide(color: TammysColors.primary, width: 2),
+                                    borderSide: BorderSide(color: context.tBrand, width: 2),
                                   ),
-                                  fillColor: Colors.white,
+                                  fillColor: context.tSurface,
                                   filled: true,
                                 ),
                               ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4),
                                   child: Text(
-                                    'Costo adicional: Q${(_getCustomizationCost() - _baseCustomizationCost).toStringAsFixed(2)}',
+                                    'Costo adicional: Q${_getAdditionalWordsCost().toStringAsFixed(2)}',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
@@ -597,17 +605,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Personaliza tu Prenda',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black87,
+                            color: context.tTextPrimary,
                           ),
                         ),
                         const SizedBox(height: 12),
                         ...(widget.product.options ?? []).map((option) {
-                          return _buildOptionCheckbox(option);
+                          return _buildOptionCheckbox(context, option);
                         }).toList(),
                         const SizedBox(height: 24),
                       ],
@@ -616,18 +624,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   // Selector de cantidad
                   Row(
                     children: [
-                      const Text(
+                      Text(
                         'Cantidad',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: Colors.black87,
+                          color: context.tTextPrimary,
                         ),
                       ),
                       const Spacer(),
                       Container(
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey[300]!),
+                          border: Border.all(color: context.tBorder),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -671,7 +679,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.grey[50],
+                      color: context.tCard,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(
@@ -679,10 +687,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       children: [
                         Text(
                           '${_quantity}x ${widget.product.name.toUpperCase()}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black87,
+                            color: context.tTextPrimary,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -693,15 +701,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               'Subtotal',
                               style: TextStyle(
                                 fontSize: 13,
-                                color: Colors.grey[600],
+                                color: context.tTextSecondary,
                               ),
                             ),
                             Text(
                               'Q${getTotalPrice().toStringAsFixed(2)}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black87,
+                                color: context.tTextPrimary,
                               ),
                             ),
                           ],
@@ -721,7 +729,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           border: Border(
-            top: BorderSide(color: Colors.grey[200]!),
+            top: BorderSide(color: context.tDivider),
           ),
         ),
         child: SafeArea(
@@ -731,7 +739,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             height: 54,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: TammysColors.primary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -762,7 +770,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 CartService().addItem(cartItem);
                 
                 // Mostrar confirmación con personalización si aplica
-                String message = 'Añadido al carrito: ${_quantity}x ${widget.product.name} - Talla: ${_selectedSize!.size}';
+                String message = 'Añadido a la bolsa: ${_quantity}x ${widget.product.name} - Talla: ${_selectedSize!.size}';
                 if (customizationText.isNotEmpty) {
                   message += '\nPersonalización: $customizationText (+Q${_getCustomizationCost().toStringAsFixed(2)})';
                 }
@@ -778,12 +786,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.shopping_bag_outlined, color: Colors.white),
+                  Icon(Icons.shopping_bag_outlined,
+                      color: Theme.of(context).colorScheme.onPrimary),
                   const SizedBox(width: 8),
                   Text(
-                    'Añadir al Carrito | Q${getTotalPrice().toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    'Añadir a la Bolsa | Q${getTotalPrice().toStringAsFixed(2)}',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -797,7 +806,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildInfoSection(String title, String? content) {
+  Widget _buildInfoSection(BuildContext context, String title, String? content) {
     if (content == null || content.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -806,10 +815,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: context.tTextPrimary,
           ),
         ),
         const SizedBox(height: 8),
@@ -817,7 +826,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           content,
           style: TextStyle(
             fontSize: 13,
-            color: Colors.grey[700],
+            color: context.tTextSecondary,
             height: 1.5,
           ),
         ),
@@ -825,7 +834,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildOptionCheckbox(ProductOption option) {
+  Widget _buildOptionCheckbox(BuildContext context, ProductOption option) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -846,7 +855,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     _updateTotal();
                   });
                 },
-                activeColor: TammysColors.primary,
+                activeColor: context.tBrand,
               ),
               Expanded(
                 child: Column(
@@ -854,17 +863,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   children: [
                     Text(
                       option.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black87,
+                        color: context.tTextPrimary,
                       ),
                     ),
                     Text(
                       option.description,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: context.tTextSecondary,
                       ),
                     ),
                   ],
@@ -872,10 +881,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
               Text(
                 '(+Q${option.price.toStringAsFixed(2)})',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: TammysColors.primary,
+                  color: context.tTextPrimary,
                 ),
               ),
             ],

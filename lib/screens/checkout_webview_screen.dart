@@ -1,3 +1,4 @@
+import 'package:utammys_mobile_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'dart:convert';
@@ -43,13 +44,13 @@ class _CheckoutWebviewScreenState extends State<CheckoutWebviewScreen> {
   }
 
   void _setupWebView() {
-    print('[CheckoutWebview] Inicializando WebView');
-    print('[CheckoutWebview] Checkout URL: ${widget.checkoutUrl}');
+    logDebug('[CheckoutWebview] Inicializando WebView');
+    logDebug('[CheckoutWebview] Checkout URL: ${widget.checkoutUrl}');
   }
 
   /// Manejar eventos de pago desde Recurrente (postMessage)
   Future<void> _handlePaymentEvent(dynamic message) async {
-    print('[CheckoutWebview] Evento recibido: $message');
+    logDebug('[CheckoutWebview] Evento recibido: $message');
 
     try {
       Map<String, dynamic> data = {};
@@ -61,18 +62,18 @@ class _CheckoutWebviewScreenState extends State<CheckoutWebviewScreen> {
       }
 
       final type = data['type'] ?? data['status'];
-      print('[CheckoutWebview] Tipo de evento: $type');
+      logDebug('[CheckoutWebview] Tipo de evento: $type');
 
       // Pago exitoso
       if (type == 'payment:success' || type == 'success') {
-        print('[CheckoutWebview] ✅ Pago exitoso detectado');
+        logDebug('[CheckoutWebview] ✅ Pago exitoso detectado');
         await _handlePaymentSuccess(data);
         return;
       }
 
       // Pago cancelado
       if (type == 'payment:cancel' || type == 'cancel') {
-        print('[CheckoutWebview] ❌ Pago cancelado');
+        logDebug('[CheckoutWebview] ❌ Pago cancelado');
         widget.onPaymentCancel();
         return;
       }
@@ -80,12 +81,12 @@ class _CheckoutWebviewScreenState extends State<CheckoutWebviewScreen> {
       // Error en el pago
       if (type == 'payment:error' || type == 'error') {
         final error = data['error'] ?? 'Error desconocido';
-        print('[CheckoutWebview] ⚠️ Error en pago: $error');
+        logDebug('[CheckoutWebview] ⚠️ Error en pago: $error');
         widget.onPaymentError(error.toString());
         return;
       }
     } catch (e) {
-      print('[CheckoutWebview] Error procesando evento: $e');
+      logDebug('[CheckoutWebview] Error procesando evento: $e');
     }
   }
 
@@ -94,7 +95,7 @@ class _CheckoutWebviewScreenState extends State<CheckoutWebviewScreen> {
     setState(() => _isProcessing = true);
 
     try {
-      print('[CheckoutWebview] Verificando orden con el backend...');
+      logDebug('[CheckoutWebview] Verificando orden con el backend...');
 
       // Esperar a que el webhook de Recurrente procese la orden
       // Hacer polling hasta que se cree
@@ -106,10 +107,10 @@ class _CheckoutWebviewScreenState extends State<CheckoutWebviewScreen> {
       );
 
       if (orderData.isNotEmpty && orderData['order_id'] != null) {
-        print('[CheckoutWebview] ✅ Orden verificada: ${orderData['order_id']}');
+        logDebug('[CheckoutWebview] ✅ Orden verificada: ${orderData['order_id']}');
         widget.onPaymentSuccess(orderData);
       } else {
-        print('[CheckoutWebview] ⚠️ Orden no encontrada, pero el pago fue exitoso');
+        logDebug('[CheckoutWebview] ⚠️ Orden no encontrada, pero el pago fue exitoso');
         // El pago fue exitoso aunque no encontremos la orden de inmediato
         // Mostrar un mensaje de éxito igual
         widget.onPaymentSuccess({
@@ -118,7 +119,7 @@ class _CheckoutWebviewScreenState extends State<CheckoutWebviewScreen> {
         });
       }
     } catch (e) {
-      print('[CheckoutWebview] Error verificando orden: $e');
+      logDebug('[CheckoutWebview] Error verificando orden: $e');
       widget.onPaymentError(e.toString());
     } finally {
       setState(() => _isProcessing = false);
@@ -156,7 +157,7 @@ class _CheckoutWebviewScreenState extends State<CheckoutWebviewScreen> {
             ),
             onWebViewCreated: (controller) {
               _webViewController = controller;
-              print('[CheckoutWebview] WebView creado');
+              logDebug('[CheckoutWebview] WebView creado');
 
               // Configurar handlers para postMessage
               _webViewController.addJavaScriptHandler(
@@ -165,28 +166,28 @@ class _CheckoutWebviewScreenState extends State<CheckoutWebviewScreen> {
               );
             },
             onLoadStart: (controller, url) {
-              print('[CheckoutWebview] Cargando: $url');
+              logDebug('[CheckoutWebview] Cargando: $url');
               setState(() => _isLoading = true);
             },
             onLoadStop: (controller, url) {
-              print('[CheckoutWebview] Cargado: $url');
+              logDebug('[CheckoutWebview] Cargado: $url');
               setState(() => _isLoading = false);
 
               // Inyectar script para capturar postMessage
               _injectPaymentListener(controller);
             },
             onReceivedError: (controller, request, error) {
-              print('[CheckoutWebview] Error: ${error.description}');
+              logDebug('[CheckoutWebview] Error: ${error.description}');
               setState(() {
                 _errorMessage = 'Error cargando formulario de pago';
               });
             },
             onProgressChanged: (controller, progress) {
-              print('[CheckoutWebview] Progreso: $progress%');
+              logDebug('[CheckoutWebview] Progreso: $progress%');
             },
             shouldOverrideUrlLoading:
                 (controller, navigationAction) async {
-              print('[CheckoutWebview] URL: ${navigationAction.request.url}');
+              logDebug('[CheckoutWebview] URL: ${navigationAction.request.url}');
 
               // Detectar URLs de retorno
               final url = navigationAction.request.url.toString();
@@ -194,7 +195,7 @@ class _CheckoutWebviewScreenState extends State<CheckoutWebviewScreen> {
               // Success URL
               if (url.contains('/checkout/payment-processing') ||
                   url.contains('payment-processing')) {
-                print('[CheckoutWebview] ✅ Detectada URL de éxito');
+                logDebug('[CheckoutWebview] ✅ Detectada URL de éxito');
                 await _handlePaymentSuccess({
                   'status': 'success',
                   'message': 'Pago completado',
@@ -204,7 +205,7 @@ class _CheckoutWebviewScreenState extends State<CheckoutWebviewScreen> {
 
               // Cancel URL
               if (url.contains('/carrito') || url.contains('cart')) {
-                print('[CheckoutWebview] ❌ Detectada URL de cancelación');
+                logDebug('[CheckoutWebview] ❌ Detectada URL de cancelación');
                 widget.onPaymentCancel();
                 return NavigationActionPolicy.CANCEL;
               }
@@ -321,19 +322,25 @@ class _CheckoutWebviewScreenState extends State<CheckoutWebviewScreen> {
 
   /// Inyectar script para escuchar postMessage de Recurrente
   Future<void> _injectPaymentListener(InAppWebViewController controller) async {
-    final script = '''
+    const script = '''
       (function() {
         console.log('[Recurrente] Escuchador de postMessage instalado');
-        
+
+        function sendToFlutter(payload) {
+          try {
+            if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
+              window.flutter_inappwebview.callHandler('payment', JSON.stringify(payload));
+            }
+          } catch (e) {
+            console.log('[Recurrente] Error enviando a Flutter:', e);
+          }
+        }
+
         window.addEventListener('message', function(event) {
           console.log('[Recurrente] Evento recibido:', event.data);
-          
-          // Pasar el evento a Flutter
-          if (window.payment && typeof window.payment === 'function') {
-            window.payment(JSON.stringify(event.data));
-          }
+          sendToFlutter(event.data);
         }, false);
-        
+
         // También escuchar directamente en Recurrente
         if (window.Recurrente) {
           console.log('[Recurrente] Objeto Recurrente disponible');
@@ -343,9 +350,9 @@ class _CheckoutWebviewScreenState extends State<CheckoutWebviewScreen> {
 
     try {
       await controller.evaluateJavascript(source: script);
-      print('[CheckoutWebview] Script de postMessage inyectado');
+      logDebug('[CheckoutWebview] Script de postMessage inyectado');
     } catch (e) {
-      print('[CheckoutWebview] Error inyectando script: $e');
+      logDebug('[CheckoutWebview] Error inyectando script: $e');
     }
   }
 }

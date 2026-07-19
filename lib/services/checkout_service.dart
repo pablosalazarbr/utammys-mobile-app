@@ -1,3 +1,4 @@
+import 'package:utammys_mobile_app/utils/logger.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -107,10 +108,10 @@ class CheckoutService {
     CheckoutRequest request,
   ) async {
     try {
-      print('[CheckoutService] Inicializando sesión de checkout...');
-      print('[CheckoutService] API URL: $_apiUrl');
-      print('[CheckoutService] Buyer Email: ${request.buyerEmail}');
-      print('[CheckoutService] Items count: ${request.items.length}');
+      logDebug('[CheckoutService] Inicializando sesión de checkout...');
+      logDebug('[CheckoutService] API URL: $_apiUrl');
+      logDebug('[CheckoutService] Buyer Email: ${request.buyerEmail}');
+      logDebug('[CheckoutService] Items count: ${request.items.length}');
 
       final url = Uri.parse('$_apiUrl/shop/cart/initialize-checkout');
 
@@ -128,15 +129,15 @@ class CheckoutService {
         },
       );
 
-      print('[CheckoutService] Response status: ${response.statusCode}');
-      print('[CheckoutService] Response body: ${response.body}');
+      logDebug('[CheckoutService] Response status: ${response.statusCode}');
+      logDebug('[CheckoutService] Response body: ${response.body}');
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
         if (data['success'] == true && data['data'] != null) {
           final sessionData = CheckoutSessionData.fromJson(data['data']);
-          print('[CheckoutService] ✅ Sesión creada: ${sessionData.sessionId}');
+          logDebug('[CheckoutService] ✅ Sesión creada: ${sessionData.sessionId}');
           return sessionData;
         } else {
           throw Exception(
@@ -159,7 +160,7 @@ class CheckoutService {
         );
       }
     } catch (e) {
-      print('[CheckoutService] ❌ Error: $e');
+      logDebug('[CheckoutService] ❌ Error: $e');
       rethrow;
     }
   }
@@ -171,7 +172,7 @@ class CheckoutService {
     required String email,
   }) async {
     try {
-      print('[CheckoutService] Verificando estado del checkout: $checkoutId');
+      logDebug('[CheckoutService] Verificando estado del checkout: $checkoutId');
 
       final url = Uri.parse('$_apiUrl/shop/orders/latest')
           .replace(queryParameters: {'email': email});
@@ -191,14 +192,14 @@ class CheckoutService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['success'] == true) {
-          print('[CheckoutService] ✅ Orden verificada');
+          logDebug('[CheckoutService] ✅ Orden verificada');
           return data['data'] ?? {};
         }
       }
 
       return {};
     } catch (e) {
-      print('[CheckoutService] ⚠️ Error verificando estado: $e');
+      logDebug('[CheckoutService] ⚠️ Error verificando estado: $e');
       return {};
     }
   }

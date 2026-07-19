@@ -1,12 +1,12 @@
+import 'package:utammys_mobile_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:utammys_mobile_app/helpers/image_url_helper.dart';
 import 'package:utammys_mobile_app/models/product_model.dart';
 import 'package:utammys_mobile_app/models/school_model.dart';
 import 'package:utammys_mobile_app/screens/product_detail_screen.dart';
 import 'package:utammys_mobile_app/services/product_service.dart';
-import 'package:utammys_mobile_app/services/cart_service.dart';
-import 'package:utammys_mobile_app/widgets/custom_bottom_nav_bar.dart';
 import 'package:utammys_mobile_app/widgets/ui_components.dart';
+import 'package:utammys_mobile_app/theme/app_theme.dart';
 
 class SchoolProductsScreen extends StatefulWidget {
   final School school;
@@ -22,7 +22,6 @@ class SchoolProductsScreen extends StatefulWidget {
 
 class _SchoolProductsScreenState extends State<SchoolProductsScreen> {
   late Future<List<Product>> _productsFuture;
-  int _currentNavIndex = 1; // Search tab (since we're in school products from search)
 
   @override
   void initState() {
@@ -30,30 +29,15 @@ class _SchoolProductsScreenState extends State<SchoolProductsScreen> {
     _productsFuture = ProductService.getClientProducts(widget.school.id);
   }
 
-  void _handleNavigation(int index) {
-    if (index == _currentNavIndex) return;
-    
-    switch (index) {
-      case 0:
-        Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-        break;
-      case 1:
-        Navigator.pushNamedAndRemoveUntil(context, '/school-search', (route) => false);
-        break;
-      case 2:
-        Navigator.pushNamed(context, '/cart');
-        break;
-    }
-  }
 
   String _getImageUrl(String? mediaPath) {
     if (mediaPath == null || mediaPath.isEmpty) {
-      print('[SchoolProductsScreen] ADVERTENCIA: mediaPath vacío o nulo');
+      logDebug('[SchoolProductsScreen] ADVERTENCIA: mediaPath vacío o nulo');
       return 'https://via.placeholder.com/300x400?text=Sin+Imagen';
     }
     
     final url = ImageUrlHelper.buildImageUrl(mediaPath);
-    print('[SchoolProductsScreen] URL generada para "$mediaPath" => "$url"');
+    logDebug('[SchoolProductsScreen] URL generada para "$mediaPath" => "$url"');
     return url;
   }
 
@@ -62,17 +46,17 @@ class _SchoolProductsScreenState extends State<SchoolProductsScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        backgroundColor: TammysColors.background,
+        backgroundColor: context.tScaffold,
         elevation: 1,
         shadowColor: Colors.black.withOpacity(0.1),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: TammysColors.primary),
+          icon: Icon(Icons.arrow_back, color: context.tTextPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           widget.school.name,
-          style: const TextStyle(
-            color: Colors.black,
+          style: TextStyle(
+            color: context.tTextPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -80,7 +64,7 @@ class _SchoolProductsScreenState extends State<SchoolProductsScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: TammysColors.primary),
+            icon: Icon(Icons.search, color: context.tTextPrimary),
             onPressed: () {},
           ),
         ],
@@ -113,14 +97,14 @@ class _SchoolProductsScreenState extends State<SchoolProductsScreen> {
                   Icon(
                     Icons.inventory_2_outlined,
                     size: 64,
-                    color: Colors.grey[300],
+                    color: context.tTextSecondary,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'No hay productos disponibles',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: context.tTextSecondary,
                     ),
                   ),
                 ],
@@ -129,7 +113,7 @@ class _SchoolProductsScreenState extends State<SchoolProductsScreen> {
           }
 
           return GridView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 16,
@@ -145,6 +129,7 @@ class _SchoolProductsScreenState extends State<SchoolProductsScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
+                      settings: const RouteSettings(name: 'product-detail'),
                       builder: (context) => ProductDetailScreen(
                         product: products[index],
                       ),
@@ -155,11 +140,6 @@ class _SchoolProductsScreenState extends State<SchoolProductsScreen> {
             },
           );
         },
-      ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _currentNavIndex,
-        onTap: _handleNavigation,
-        cartItemCount: CartService().totalQuantity,
       ),
     );
   }
@@ -194,7 +174,7 @@ class _ProductCardState extends State<ProductCard> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
           side: BorderSide(
-            color: Colors.grey[200]!,
+            color: context.tBorder,
             width: 1,
           ),
         ),
@@ -209,7 +189,7 @@ class _ProductCardState extends State<ProductCard> {
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(12),
                   ),
-                  color: Colors.grey[100],
+                  color: context.tCard,
                 ),
                 child: Stack(
                   children: [
@@ -217,14 +197,14 @@ class _ProductCardState extends State<ProductCard> {
                       child: Builder(
                         builder: (context) {
                           final imageUrl = widget.imageUrl;
-                          print('[ProductCard] Renderizando imagen: $imageUrl');
-                          print('[ProductCard] Producto: ${widget.product.name}, ID: ${widget.product.id}');
+                          logDebug('[ProductCard] Renderizando imagen: $imageUrl');
+                          logDebug('[ProductCard] Producto: ${widget.product.name}, ID: ${widget.product.id}');
                           return Image.network(
                             imageUrl,
                             fit: BoxFit.cover,
                             loadingBuilder: (context, child, loadingProgress) {
                               if (loadingProgress == null) return child;
-                              print('[ProductCard] Cargando imagen... ${loadingProgress.cumulativeBytesLoaded}/${loadingProgress.expectedTotalBytes}');
+                              logDebug('[ProductCard] Cargando imagen... ${loadingProgress.cumulativeBytesLoaded}/${loadingProgress.expectedTotalBytes}');
                               return Center(
                                 child: CircularProgressIndicator(
                                   value: loadingProgress.expectedTotalBytes != null
@@ -234,11 +214,11 @@ class _ProductCardState extends State<ProductCard> {
                               );
                             },
                             errorBuilder: (context, error, stackTrace) {
-                              print('[ProductCard] ERROR cargando imagen: $error');
-                              print('[ProductCard] Stack trace: $stackTrace');
+                              logDebug('[ProductCard] ERROR cargando imagen: $error');
+                              logDebug('[ProductCard] Stack trace: $stackTrace');
                               return Icon(
                                 Icons.image_not_supported,
-                                color: Colors.grey[400],
+                                color: context.tTextSecondary,
                                 size: 40,
                               );
                             },
@@ -259,7 +239,7 @@ class _ProductCardState extends State<ProductCard> {
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: context.tSurface,
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
@@ -270,7 +250,7 @@ class _ProductCardState extends State<ProductCard> {
                           ),
                           child: Icon(
                             _isFavorite ? Icons.favorite : Icons.favorite_outline,
-                            color: _isFavorite ? TammysColors.primary : Colors.grey[400],
+                            color: _isFavorite ? context.tBrand : context.tTextSecondary,
                             size: 20,
                           ),
                         ),
@@ -314,10 +294,10 @@ class _ProductCardState extends State<ProductCard> {
                     widget.product.name,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      color: context.tTextPrimary,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -333,7 +313,7 @@ class _ProductCardState extends State<ProductCard> {
                         '5.0',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: context.tTextSecondary,
                         ),
                       ),
                       const SizedBox(width: 4),
@@ -341,7 +321,7 @@ class _ProductCardState extends State<ProductCard> {
                         '(${widget.product.sizes?.length ?? 0} tallas)',
                         style: TextStyle(
                           fontSize: 11,
-                          color: Colors.grey[500],
+                          color: context.tTextSecondary,
                         ),
                       ),
                     ],
@@ -350,10 +330,10 @@ class _ProductCardState extends State<ProductCard> {
                   if (widget.product.sizes != null && widget.product.sizes!.isNotEmpty)
                     Text(
                       'Q${widget.product.getMinPrice()?.toStringAsFixed(2) ?? '0.00'} - Q${widget.product.getMaxPrice()?.toStringAsFixed(2) ?? '0.00'}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: TammysColors.primary,
+                        color: context.tTextPrimary,
                       ),
                     )
                   else
@@ -361,7 +341,7 @@ class _ProductCardState extends State<ProductCard> {
                       'Precio no disponible',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey[500],
+                        color: context.tTextSecondary,
                       ),
                     ),
                 ],

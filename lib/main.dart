@@ -6,12 +6,18 @@ import 'package:utammys_mobile_app/screens/school_search_screen.dart';
 import 'package:utammys_mobile_app/screens/school_products_screen.dart';
 import 'package:utammys_mobile_app/screens/cart_screen.dart';
 import 'package:utammys_mobile_app/services/school_service.dart';
-import 'package:utammys_mobile_app/services/cart_service.dart';
-import 'package:utammys_mobile_app/widgets/custom_bottom_nav_bar.dart';
 import 'package:utammys_mobile_app/widgets/ui_components.dart';
+import 'package:utammys_mobile_app/widgets/floating_nav_pill.dart';
+import 'package:utammys_mobile_app/theme/app_theme.dart';
+import 'package:utammys_mobile_app/services/theme_controller.dart';
+import 'package:utammys_mobile_app/services/nav_controller.dart';
+import 'package:utammys_mobile_app/screens/settings_screen.dart';
+import 'package:utammys_mobile_app/screens/orders_screen.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  await ThemeController.instance.load();
   runApp(const MyApp());
 }
 
@@ -20,19 +26,34 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Uniformes Tamys",
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: TammysColors.primary),
-        useMaterial3: true,
-        fontFamily: 'OpenSans',
-        scaffoldBackgroundColor: TammysColors.background,
-      ),
-      home: const HomePage(),
-      routes: {
-        '/school-search': (context) => const SchoolSearchScreen(),
-        '/cart': (context) => const CartScreen(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: ThemeController.instance.mode,
+      builder: (context, mode, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: "Uniformes Tamys",
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: mode,
+          navigatorKey: NavController.instance.navigatorKey,
+          navigatorObservers: [NavPillObserver()],
+          home: const HomePage(),
+          routes: {
+            '/school-search': (context) => const SchoolSearchScreen(),
+            '/cart': (context) => const CartScreen(),
+            '/orders': (context) => const OrdersScreen(),
+            '/settings': (context) => const SettingsScreen(),
+          },
+          // El pill flotante vive una sola vez, por encima de todas las rutas.
+          builder: (context, child) {
+            return Stack(
+              children: [
+                child ?? const SizedBox.shrink(),
+                const FloatingNavPill(),
+              ],
+            );
+          },
+        );
       },
     );
   }
@@ -47,7 +68,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Future<List<School>> _popularSchoolsFuture;
-  int _selectedBottomIndex = 0;
 
   @override
   void initState() {
@@ -55,31 +75,10 @@ class _HomePageState extends State<HomePage> {
     _popularSchoolsFuture = SchoolService.getRandomSchools(limit: 4);
   }
 
-  void _onBottomNavTapped(int index) {
-    setState(() {
-      _selectedBottomIndex = index;
-    });
-    
-    // Navigate based on index
-    switch (index) {
-      case 0:
-        // Home (current)
-        break;
-      case 1:
-        // Search schools
-        Navigator.pushNamed(context, '/school-search');
-        break;
-      case 2:
-        // Cart
-        Navigator.pushNamed(context, '/cart');
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: TammysColors.background,
+      backgroundColor: context.tScaffold,
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Column(
@@ -87,56 +86,35 @@ class _HomePageState extends State<HomePage> {
           children: [
             // Top Navigation Bar (Editorial style)
             _buildTopNavBar(),
-            
+
             // Hero Section
             _buildHeroSection(),
-            
+
             // Categories Section
             _buildCategoriesSection(),
-            
+
             // Popular Schools Section
             _buildPopularSchoolsSection(),
-            
+
             // Trust Section
             _buildTrustSection(),
-            
-            // Bottom padding for navigation bar
-            const SizedBox(height: 80),
+
+            // Espacio para el pill flotante
+            const SizedBox(height: 110),
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _selectedBottomIndex,
-        onTap: _handleNavigation,
-        cartItemCount: CartService().totalQuantity,
-      ),
     );
-  }
-
-  void _handleNavigation(int index) {
-    if (index == _selectedBottomIndex) return;
-    
-    switch (index) {
-      case 0:
-        // Home (current)
-        break;
-      case 1:
-        Navigator.pushNamed(context, '/school-search');
-        break;
-      case 2:
-        Navigator.pushNamed(context, '/cart');
-        break;
-    }
   }
 
   Widget _buildTopNavBar() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: TammysColors.background,
+        color: context.tScaffold,
         border: Border(
           bottom: BorderSide(
-            color: TammysColors.divider,
+            color: context.tDivider,
             width: 1,
           ),
         ),
@@ -208,7 +186,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/school-search');
+                      NavController.instance.goSearch();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -294,15 +272,15 @@ class _HomePageState extends State<HomePage> {
   Widget _buildCategoryCard(BuildContext context, Category category) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/school-search');
+        NavController.instance.goSearch();
       },
       child: Container(
         height: 200,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          color: TammysColors.lightGrey,
+          color: context.tCard,
           border: Border.all(
-            color: TammysColors.divider,
+            color: context.tDivider,
             width: 1,
           ),
         ),
@@ -316,7 +294,7 @@ class _HomePageState extends State<HomePage> {
                     topLeft: Radius.circular(8),
                     topRight: Radius.circular(8),
                   ),
-                  color: TammysColors.lightGrey,
+                  color: context.tCard,
                   image: category.imageUrl != null
                       ? category.imageUrl!.startsWith('assets/')
                           ? DecorationImage(
@@ -459,9 +437,9 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          color: TammysColors.lightGrey,
+          color: context.tCard,
           border: Border.all(
-            color: TammysColors.divider,
+            color: context.tDivider,
             width: 1,
           ),
         ),
@@ -470,8 +448,8 @@ class _HomePageState extends State<HomePage> {
           children: [
             Row(
               children: [
-                const Icon(Icons.verified, 
-                  color: TammysColors.primary,
+                Icon(Icons.verified,
+                  color: context.tTextPrimary,
                   size: 20,
                 ),
                 const SizedBox(width: 8),
@@ -489,7 +467,7 @@ class _HomePageState extends State<HomePage> {
               'Todos nuestros uniformes están fabricados siguiendo las guías oficiales de las instituciones para garantizar el 100% de cumplimiento con los códigos de vestimenta.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 fontSize: 13,
-                color: TammysColors.darkGrey,
+                color: context.tTextSecondary,
                 height: 1.5,
               ),
             ),
