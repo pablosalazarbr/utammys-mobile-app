@@ -84,13 +84,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return _baseCustomizationCost + (additionalWords * _additionalWordCost);
   }
 
-  /// Costo únicamente de las palabras adicionales (nunca negativo).
-  /// Sin texto o con ≤2 palabras el excedente es 0.
-  double _getAdditionalWordsCost() {
-    final cost = _getCustomizationCost();
-    return cost > _baseCustomizationCost ? cost - _baseCustomizationCost : 0.0;
-  }
-
   double getTotalPrice() {
     final basePrice = _selectedSize?.price ?? widget.product.price ?? widget.product.getMinPrice() ?? 0.0;
     return ((basePrice + _additionalPrice) * _quantity);
@@ -625,7 +618,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4),
                                   child: Text(
-                                    'Costo adicional: Q${_getAdditionalWordsCost().toStringAsFixed(2)}',
+                                    'Costo adicional: Q${_getCustomizationCost().toStringAsFixed(2)}',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,

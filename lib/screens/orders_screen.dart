@@ -6,6 +6,7 @@ import 'package:utammys_mobile_app/screens/order_detail_screen.dart';
 import 'package:utammys_mobile_app/screens/qr_scan_screen.dart';
 import 'package:utammys_mobile_app/theme/app_theme.dart';
 import 'package:utammys_mobile_app/widgets/ui_components.dart';
+import 'package:utammys_mobile_app/widgets/app_notification.dart';
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
@@ -57,9 +58,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       if (mounted) Navigator.pop(context); // cerrar sheet
       await _load();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Pedido ${order.orderNumber} agregado')),
-        );
+        showAppNotification(context, 'Pedido ${order.orderNumber} agregado');
       }
     } on OrderTrackingException catch (e) {
       sheetSetState(() {

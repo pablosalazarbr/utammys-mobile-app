@@ -290,7 +290,7 @@ class CartItemWidget extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: context.tCard,
               borderRadius: BorderRadius.circular(8),
             ),
             child: item.product.media != null && item.product.media!.isNotEmpty
@@ -333,7 +333,7 @@ class CartItemWidget extends StatelessWidget {
                     'Talla: ${item.size!.size}',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[600],
+                      color: context.tTextSecondary,
                     ),
                   ),
                 const SizedBox(height: 8),
@@ -380,7 +380,7 @@ class CartItemWidget extends StatelessWidget {
               // Cantidad
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: context.tCard,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Row(
@@ -390,6 +390,8 @@ class CartItemWidget extends StatelessWidget {
                           ? () => onQuantityChanged(item.quantity - 1)
                           : null,
                       icon: const Icon(Icons.remove, size: 18),
+                      color: context.tTextPrimary,
+                      disabledColor: context.tTextSecondary,
                       constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                       padding: EdgeInsets.zero,
                     ),
@@ -398,13 +400,18 @@ class CartItemWidget extends StatelessWidget {
                       child: Center(
                         child: Text(
                           '${item.quantity}',
-                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                            color: context.tTextPrimary,
+                          ),
                         ),
                       ),
                     ),
                     IconButton(
                       onPressed: () => onQuantityChanged(item.quantity + 1),
                       icon: const Icon(Icons.add, size: 18),
+                      color: context.tTextPrimary,
                       constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                       padding: EdgeInsets.zero,
                     ),

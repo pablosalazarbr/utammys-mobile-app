@@ -151,21 +151,25 @@ class _QrScanScreenState extends State<QrScanScreen> {
     );
   }
 
-  /// Cámara a pantalla completa (cover) respetando el aspect ratio real.
+  /// Cámara a pantalla completa SIN deformar: escala el preview (en su tamaño
+  /// real) con BoxFit.cover para cubrir el área disponible recortando el exceso.
   Widget _fullScreenPreview() {
     final controller = _controller!;
     final preview = controller.value.previewSize;
     if (!controller.value.isInitialized || preview == null) {
       return const ColoredBox(color: Colors.black);
     }
-    return FittedBox(
-      fit: BoxFit.cover,
-      clipBehavior: Clip.hardEdge,
-      child: SizedBox(
-        // previewSize viene en horizontal; se invierte para retrato.
-        width: preview.height,
-        height: preview.width,
-        child: CameraPreview(controller),
+    return ClipRect(
+      child: FittedBox(
+        fit: BoxFit.cover,
+        clipBehavior: Clip.hardEdge,
+        child: SizedBox(
+          // previewSize es horizontal; se invierte para retrato manteniendo
+          // el mismo aspect ratio que usa CameraPreview.
+          width: preview.height,
+          height: preview.width,
+          child: CameraPreview(controller),
+        ),
       ),
     );
   }
@@ -202,23 +206,25 @@ class _QrScanScreenState extends State<QrScanScreen> {
     }
 
     return Stack(
-      alignment: Alignment.center,
+      fit: StackFit.expand,
       children: [
         Positioned.fill(child: _fullScreenPreview()),
-        // Marco guía con overlay oscuro alrededor (spotlight).
-        Container(
-          width: 250,
-          height: 250,
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.white, width: 3),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.4),
-                blurRadius: 0,
-                spreadRadius: 2000,
-              ),
-            ],
+        // Marco guía centrado, con overlay oscuro alrededor (spotlight).
+        Center(
+          child: Container(
+            width: 250,
+            height: 250,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.white, width: 3),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.4),
+                  blurRadius: 0,
+                  spreadRadius: 2000,
+                ),
+              ],
+            ),
           ),
         ),
         const Positioned(
