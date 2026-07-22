@@ -157,16 +157,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         items: items,
       );
 
-      // Llamar al servicio
+      // PASO 1: Crear la sesión de checkout en Recurrente
       final sessionData =
           await _checkoutService.initializeCheckoutSession(checkoutRequest);
+
+      // PASO 2: Crear la orden en la BD (estado PENDING) ANTES de pagar,
+      // igual que la tienda web, para que el webhook de Recurrente la encuentre.
+      await _checkoutService.createOrderFromCheckout(
+        checkoutId: sessionData.sessionId,
+        request: checkoutRequest,
+      );
 
       setState(() {
         _checkoutSessionData = sessionData;
         _isProcessing = false;
       });
 
-      logDebug('[CheckoutScreen] ✅ Sesión creada: ${sessionData.sessionId}');
+      logDebug('[CheckoutScreen] ✅ Sesión y orden creadas: ${sessionData.sessionId}');
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();

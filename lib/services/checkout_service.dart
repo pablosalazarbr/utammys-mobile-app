@@ -165,6 +165,78 @@ class CheckoutService {
     }
   }
 
+  /// Crear la orden (estado PENDING) en la BD a partir del checkout.
+  ///
+  /// DEBE llamarse justo después de [initializeCheckoutSession] y ANTES de que
+  /// el usuario pague, para que cuando el webhook de Recurrente se dispare
+  /// encuentre la orden (exactamente como lo hace la tienda web).
+  ///
+  /// Devuelve el order_id creado. Lanza excepción si falla.
+  Future<String?> createOrderFromCheckout({
+    required String checkoutId,
+    required CheckoutRequest request,
+  }) async {
+    try {
+      logDebug('[CheckoutService] Creando orden desde checkout: $checkoutId');
+
+      final url = Uri.parse('$_apiUrl/shop/orders/create-from-checkout');
+
+      // shipping_address / shipping_city son requeridos por la API:
+      // se envía 'N/A' cuando es retiro en tienda (pickup), igual que la web.
+      final payload = {
+        'checkout_id': checkoutId,
+        'buyer_name': request.buyerName,
+        'buyer_email': request.buyerEmail,
+        'buyer_phone': request.buyerPhone,
+        'buyer_tax_id': 'C/F',
+        'shipping_method': request.shippingMethod,
+        'shipping_address': request.shippingAddress ?? 'N/A',
+        'shipping_city': request.shippingCity ?? 'N/A',
+        'items': request.items.map((item) => item.toJson()).toList(),
+      };
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(payload),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception('Timeout: No se pudo crear la orden');
+        },
+      );
+
+      logDebug('[CheckoutService] create-from-checkout status: ${response.statusCode}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        if (data['success'] == true) {
+          final orderId = data['data']?['order_id']?.toString();
+          logDebug('[CheckoutService] ✅ Orden creada: $orderId');
+          return orderId;
+        }
+        throw Exception(data['message'] ?? 'No se pudo crear la orden');
+      } else if (response.statusCode == 422) {
+        final data = jsonDecode(response.body);
+        final errors = data['errors'] ?? {};
+        String errorMessage = 'Validación fallida:\n';
+        errors.forEach((key, value) {
+          errorMessage += '- $key: ${value.first}\n';
+        });
+        throw Exception(errorMessage);
+      } else {
+        final data = jsonDecode(response.body);
+        throw Exception(data['message'] ?? 'Error ${response.statusCode} creando la orden');
+      }
+    } catch (e) {
+      logDebug('[CheckoutService] ❌ Error creando orden: $e');
+      rethrow;
+    }
+  }
+
   /// Verificar el estado de un checkout y obtener la orden creada
   /// Se usa después de que el webhook de Recurrente procesa el pago
   Future<Map<String, dynamic>> verifyCheckoutStatus({
